@@ -1,20 +1,24 @@
+import React from 'react';
+import { View, Platform, StatusBar as RNStatusBar } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import Rotas from './src/rotas';
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      {/* StatusBar do Expo apenas para o estilo do texto */}
+      <StatusBar style="dark" />
+
+      {/* View para cor de fundo da StatusBar */}
+      {Platform.OS === 'android' && (
+        <View style={{
+          height: RNStatusBar.currentHeight,
+          backgroundColor: '#ffffffff'
+        }} />
+      )}
+ 
+      <Rotas />
+    </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
