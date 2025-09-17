@@ -28,7 +28,7 @@ Este projeto é construído com uma stack de tecnologias modernas, visando perfo
 | **Figma**    | UI/UX Design    | Prototipagem, design das interfaces e criação da experiência do usuário.   |
 | **React Native** | Frontend    | Framework para desenvolvimento de aplicativos móveis multiplataforma (iOS e Android). |
 | **Java (Spring Boot)** | Backend    | Linguagem e framework robustos para construção da API, regras de negócio e lógica do servidor. |
-| **PostgreSQL** | Banco de Dados | Sistema de gerenciamento de banco de dados relacional, confiável e poderoso para armazenar os dados da aplicação. |
+| **MySQL** | Banco de Dados | Sistema de gerenciamento de banco de dados relacional, confiável e poderoso para armazenar os dados da aplicação. |
 | **Trello**   | Gerenciamento   | Organização das tarefas, sprints e acompanhamento do andamento do projeto. |
 
 ---
