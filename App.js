@@ -1,8 +1,11 @@
+
 import React from 'react';
+
 import { View, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Rotas from './src/rotas';
 import { StatusBar } from 'expo-status-bar';
+
 
 export default function App() {
   return (
@@ -17,8 +20,7 @@ export default function App() {
           backgroundColor: '#ffffffff'
         }} />
       )}
- 
       <Rotas />
     </NavigationContainer>
-  );
+  );  
 }
