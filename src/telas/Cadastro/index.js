@@ -1,15 +1,13 @@
 import React, { useState} from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, Alert } from "react-native";
+import { Text, StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView , KeyboardAvoidingView , Platform } from "react-native";
 import * as Animatable from 'react-native-animatable';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native'; 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Cadastro() {
   const navigation = useNavigation();
 
   const [nome, setNome] = useState('');
-  const [curso, setCurso] = useState('');
-  const [periodo, setPeriodo] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
@@ -17,7 +15,7 @@ export default function Cadastro() {
 
 
   const handleRegister = async () => {
-   if (!nome || !curso || !periodo || !email || !senha || !confirmarSenha) {
+   if (!nome || !email || !senha || !confirmarSenha) {
       Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
@@ -28,7 +26,7 @@ export default function Cadastro() {
   }
     
     try {
-    const usuario = { nome, curso, periodo, email, senha };
+    const usuario = { nome, email, senha };
     await AsyncStorage.setItem('@usuario', JSON.stringify(usuario));
     Alert.alert('Cadastro', 'Usuário cadastrado com sucesso!');
     navigation.navigate('Login');
@@ -39,8 +37,11 @@ export default function Cadastro() {
 };
 
     return (
-    <View style={styles.container}>
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
+
+      <ScrollView  contentContainerStyle={styles.scrollViewContent}>
       {/* Cabeçalho */}
+
       <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerHeader}>
         <Text style={styles.message}>Crie sua conta</Text>
       </Animatable.View>
@@ -53,22 +54,6 @@ export default function Cadastro() {
           style={styles.input}
           value={nome}
           onChangeText={setNome}
-        />
-
-         <Text style={styles.title}>Curso</Text>
-        <TextInput 
-          placeholder="Digite seu Curso..."
-          style={styles.input}
-          value={curso}
-          onChangeText={setCurso}
-        />
-
-        <Text style={styles.title}>Periodo</Text>
-        <TextInput 
-          placeholder="Digite seu Periodo..."
-          style={styles.input}
-          value={periodo}
-          onChangeText={setPeriodo}
         />
 
         <Text style={styles.title}>Email</Text>
@@ -108,7 +93,8 @@ export default function Cadastro() {
           <Text style={styles.loginText}>Já possui conta? Faça login</Text>
         </TouchableOpacity>
       </Animatable.View>
-    </View>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 
 }
@@ -121,6 +107,9 @@ const styles = StyleSheet.create({
     marginTop: '5%',
     marginBottom: '8%',
     paddingStart: '5%',
+  },
+  scrollViewContent: {
+    flexGrow: 1,
   },
   message: {
     fontSize: 28,

@@ -1,11 +1,16 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 
-export default function Card({ titulo, children }) {
+export default function Card({ titulo, children, action }) {
   return (
     <View style={styles.card}>
-      {titulo && <Text style={styles.titulo}>{titulo}</Text>}
-      {children}
+      <View style={styles.header}>
+        <Text style={styles.title}>{titulo}</Text>
+        {action && <View style={styles.action}>{action}</View>}
+      </View>
+      <View style={styles.content}>
+        {children}
+      </View>
     </View>
   );
 }
@@ -13,20 +18,23 @@ export default function Card({ titulo, children }) {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#fff",
-    borderRadius: 12,
-    padding: 16,
+    borderRadius: 10,
+    padding: 10,
     marginVertical: 8,
-    marginHorizontal: 16,
-    elevation: 4, // sombra Android
-    shadowColor: "#000", // sombra iOS
-    shadowOffset: { width: 0, height: 2 },
+    marginHorizontal: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.2,
-    shadowRadius: 4,
+    shadowRadius: 1.41,
+    elevation: 2,
   },
-  titulo: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginBottom: 8,
-    color: "#333",
+  header: { 
+    flexDirection: "row", 
+    justifyContent: "space-between", 
+    alignItems: "center",
+    marginBottom: 5
   },
+  title: { fontSize: 18, fontWeight: "bold" },
+  action: { marginLeft: 10 },
+  content: {},
 });

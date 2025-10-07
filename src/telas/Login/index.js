@@ -27,10 +27,20 @@ export default function Login() {
 
     if (usuarioSalvo && nome === usuarioSalvo.nome && senha === usuarioSalvo.senha) {
       Alert.alert('Login', `Bem-vindo(a) ${usuarioSalvo.nome}!`);
-      navigation.navigate('Principal');
+      navigation.navigate('Formulario');
     } else {
       Alert.alert('Erro', 'Nome ou senha incorretos');
     }
+    const verificarPrimeiroAcesso = async () => {
+      const primeiro =  await AsyncStorage.getItem('@primeiro_acesso');
+      if (primeiro === null || primeiro === 'true') {
+        navigation.replaceParams("Formulario");
+      } else {
+        navigation.replaceParams("Principal");
+      }
+    };
+    verificarPrimeiroAcesso();
+
   };
 
   return (

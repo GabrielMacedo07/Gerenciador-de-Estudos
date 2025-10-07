@@ -1,8 +1,8 @@
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import React from 'react';
 import { Feather } from '@expo/vector-icons';
+import 'react-native-gesture-handler';
+import { createDrawerNavigator } from '@react-navigation/drawer';
 
 
 import Welcome from '../telas/Welcome';
@@ -12,11 +12,13 @@ import Dashboard from '../telas/Principal';
 import Tarefas from '../telas/Tarefas';
 import Agenda from '../telas/Agenda';
 import Estatisticas from '../telas/Estatiticas';
+import Aulas from '../telas/Aulas';
+import Formulario from '../telas/Formulario';
 
-const Tab = createBottomTabNavigator();
+
 const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
 
-// Stack para gerenciar Dashboard e suas telas internas
 function DashboardStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -25,47 +27,82 @@ function DashboardStack() {
   );
 }
 
-// Abas principais
 function PrincipalTabs() {
   return (
-    <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen 
+    <Drawer.Navigator screenOptions={{ headerStyle: { backgroundColor: '#38a69d' },
+        headerTintColor: '#fff',
+        contentStyle: { backgroundColor: '#4d1818ff' } }}>
+      <Drawer.Screen 
         name="Home" 
         component={DashboardStack}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          drawerLabel: 'Inicio',
+          drawerIcon: ({ color, size }) => (
             <Feather name="home" size={size} color={color} />
           ),
         }}
       />
-      <Tab.Screen 
+      <Drawer.Screen 
         name="Adicionar Tarefas" 
         component={Tarefas}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          drawerLabel: 'Adicionar Tarefas',
+          drawerIcon: ({ color, size }) => (
             <Feather name="plus-square" size={size} color={color} />
           ),
         }}
       />
-      <Tab.Screen 
+      <Drawer.Screen 
         name="Agenda" 
         component={Agenda}
         options={{
-          tabBarIcon: ({ color, size }) => (
+          drawerLabel: 'Agenda',
+          drawerIcon: ({ color, size }) => (
             <Feather name="calendar" size={size} color={color} />
           ),
         }}
-      />
-      <Tab.Screen 
+      />  
+      <Drawer.Screen 
         name="Estatísticas" 
         component={Estatisticas}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Feather name="bar-chart-2" size={size} color={color} />
+          drawerLabel: 'Estatísticas',
+          drawerIcon: ({ color, size }) => (
+            <Feather name="bar-chart-2" size={size} color={color}/>
           ),
         }}
       />
-    </Tab.Navigator>
+      <Drawer.Screen 
+        name="Aulas" 
+        component={Aulas}
+        options={{
+          drawerLabel: 'Aulas',
+          drawerIcon: ({ color, size }) => (
+            <Feather name="book" size={size} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="Formulario" 
+        component={Formulario}
+        options={{
+          drawerLabel: 'Atualizar Dados',
+          drawerIcon: ({ color, size }) => (
+            <Feather name="file-text" size={size} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="Login" 
+        component={Login}
+        options={{
+          drawerLabel: 'Sair',
+          drawerIcon: ({ color, size }) => (
+            <Feather name="file-text" size={size} color={color} />
+          ),
+        }}
+      />
+    </Drawer.Navigator>
   );
 }
 
@@ -79,6 +116,10 @@ export default function Rotas() {
       <Stack.Screen name="Principal" component={PrincipalTabs} />
       <Stack.Screen name="Agenda" component={Agenda} />
       <Stack.Screen name="Estatísticas" component={Estatisticas} />
+      <Stack.Screen name="Aulas" component={Aulas} />
+      <Stack.Screen name="Tarefas" component={Tarefas} />
+      <Stack.Screen name="Formulario" component={Formulario} />
+    
     </Stack.Navigator>
   );
 }

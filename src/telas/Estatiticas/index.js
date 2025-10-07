@@ -1,14 +1,35 @@
 import React, {useState} from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, FlatList } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export default function Estatisticas({ navigation }) {
+export default function Estatisticas() {
     const [materia, setMateria] = useState('');
     const [nota, setNota] = useState('');
+    const [notaLista, setNotaLista] = useState([]);
+
+    const carregarNotas = async () => {
+        try {
+            const jsonValue = await AsyncStorage.getItem('@notas');
+            const notasCarregadas = jsonValue != null ? JSON.parse(jsonValue) : [];
+            setNotaLista(notasCarregadas);
+        } catch (e) {
+            console.error("Erro ao carregar notas: ", e);
+        }
+    };
+
+    React.useEffect(() => {
+        carregarNotas();
+    }, []);
     
     const salvarNotas = async () => {
-        if (materia === '' || nota === '') {
+        if (!materia.trim() || !nota.trim()) {
             Alert.alert('Erro', 'Por favor, preencha todos os campos.');
+            return;
+        }
+
+        const notaNumero = parseFloat(nota);
+        if (isNaN(notaNumero) || notaNumero < 0 || notaNumero > 10) {
+            Alert.alert('Erro', 'A nota deve ser um número entre 0 e 10.');
             return;
         }
 
@@ -18,21 +39,34 @@ export default function Estatisticas({ navigation }) {
 
             // Adiciona nova nota
 
-            const novaNota = { materia: materia, nota: parseFloat(nota) };
-            notas.push(novaNota);
+             const novaNota = { materia: materia.trim(), nota: notaNumero };
+        notas.push(novaNota);
             
             // Salva Notas
 
             await AsyncStorage.setItem('@notas', JSON.stringify(notas));
+            
+            setNotaLista(notas);
 
             Alert.alert('Sucesso', 'Nota salva com sucesso!');
             setMateria('');
             setNota('');
 
+
         } catch (erro) {
             Alert.alert('Erro', 'Ocorreu um erro ao salvar a nota.');
         }   
     };
+
+    const limparNotas = async () => {
+  try {
+    await AsyncStorage.removeItem('@notas'); // remove todas as notas
+    setNotaLista([]); // atualiza a lista na tela
+    Alert.alert('Sucesso', 'Todas as notas foram apagadas!');
+  } catch (erro) {
+    Alert.alert('Erro', 'Não foi possível apagar as notas.');
+  }
+};
 
       return (
     <View style={styles.container}>
@@ -56,6 +90,24 @@ export default function Estatisticas({ navigation }) {
       <TouchableOpacity style={styles.button} onPress={salvarNotas}>
         <Text style={styles.buttonText}>Salvar Nota</Text>
       </TouchableOpacity>
+
+      <TouchableOpacity style={[styles.button, { backgroundColor: '#ff4d4d', marginTop: 10 }]} onPress={limparNotas}>
+  <Text style={styles.buttonText}>Limpar Estatísticas</Text>
+</TouchableOpacity>
+
+         <Text style={[styles.titulo, { marginTop: 20 }]}>Notas Cadastradas</Text>
+
+      {notaLista.length === 0 ? (
+        <Text>Nenhuma nota cadastrada ainda.</Text>
+      ) : (
+        <FlatList
+          data={notaLista}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <Text style={styles.notaItem}>{item.materia}: {item.nota}</Text>
+          )}
+        />
+      )}
     </View>
   );
 }
@@ -77,4 +129,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
-});
+  notaItem: { fontSize: 16, marginVertical: 4},
+});     

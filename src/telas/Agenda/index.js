@@ -40,7 +40,7 @@ export default function Agenda({ navigation }) {
     
     <View style={styles.container}>
       <View style={styles.header}>
-      <Text style={styles.Adicionar}>Adicionar Tarefas</Text></View>
+      <Text style={styles.Adicionar}>Adicionar Materias</Text></View>
 
       <TextInput placeholder="Matéria" value={Materia} 
       onChangeText={setMateria} style={styles.input}/>
