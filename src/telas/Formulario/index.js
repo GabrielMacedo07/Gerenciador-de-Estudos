@@ -48,11 +48,39 @@ export default function Formulario() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#38a69d' },
-  header: { marginTop: '10%', padding: 20 },
-  headerText: { color: '#fff', fontSize: 26, fontWeight: 'bold' },
-  form: { backgroundColor: '#fff', borderTopLeftRadius: 25, borderTopRightRadius: 25, padding: 20 },
-  input: { borderBottomWidth: 1, borderBottomColor: '#ccc', marginBottom: 20, fontSize: 18 },
-  button: { backgroundColor: '#38a69d', borderRadius: 10, padding: 12, alignItems: 'center', marginTop: 10 },
-  buttonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#38a69d' 
+  },
+  header: {
+     marginTop: '10%', 
+     padding: 20 },
+  headerText: { 
+    color: '#fff', 
+    fontSize: 26, 
+    fontWeight: 'bold' 
+  },
+  form: { 
+    backgroundColor: '#fff', 
+    borderTopLeftRadius: 25, 
+    borderTopRightRadius: 25, 
+    padding: 20 
+  },
+  input: { 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#ccc', 
+    marginBottom: 20, 
+    fontSize: 18 },
+  button: { 
+    backgroundColor: '#38a69d', 
+    borderRadius: 10, 
+    padding: 12, 
+    alignItems: 'center', 
+    marginTop: 10 
+  },
+  buttonText: { 
+    color: '#fff', 
+    fontSize: 18, 
+    fontWeight: 'bold' 
+  },
 });

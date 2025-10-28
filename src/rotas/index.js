@@ -5,6 +5,7 @@ import 'react-native-gesture-handler';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
 
+
 import Welcome from '../telas/Welcome';
 import Login from '../telas/Login';
 import Cadastro from '../telas/Cadastro';
@@ -14,6 +15,7 @@ import Agenda from '../telas/Agenda';
 import Estatisticas from '../telas/Estatiticas';
 import Aulas from '../telas/Aulas';
 import Formulario from '../telas/Formulario';
+import Sair from '../telas/Sair';
 
 
 const Stack = createNativeStackNavigator();
@@ -33,7 +35,7 @@ function PrincipalTabs() {
         headerTintColor: '#fff',
         contentStyle: { backgroundColor: '#4d1818ff' } }}>
       <Drawer.Screen 
-        name="Home" 
+        name="Home 🏠" 
         component={DashboardStack}
         options={{
           drawerLabel: 'Inicio',
@@ -43,7 +45,7 @@ function PrincipalTabs() {
         }}
       />
       <Drawer.Screen 
-        name="Adicionar Tarefas" 
+        name="Adicionar Tarefas 📚" 
         component={Tarefas}
         options={{
           drawerLabel: 'Adicionar Tarefas',
@@ -53,7 +55,7 @@ function PrincipalTabs() {
         }}
       />
       <Drawer.Screen 
-        name="Agenda" 
+        name="Agenda 📅" 
         component={Agenda}
         options={{
           drawerLabel: 'Agenda',
@@ -63,7 +65,7 @@ function PrincipalTabs() {
         }}
       />  
       <Drawer.Screen 
-        name="Estatísticas" 
+        name="Estatísticas 📊" 
         component={Estatisticas}
         options={{
           drawerLabel: 'Estatísticas',
@@ -73,7 +75,7 @@ function PrincipalTabs() {
         }}
       />
       <Drawer.Screen 
-        name="Aulas" 
+        name="Aulas 🎓" 
         component={Aulas}
         options={{
           drawerLabel: 'Aulas',
@@ -83,7 +85,7 @@ function PrincipalTabs() {
         }}
       />
       <Drawer.Screen 
-        name="Formulario" 
+        name="Atualizar Dados 📝" 
         component={Formulario}
         options={{
           drawerLabel: 'Atualizar Dados',
@@ -93,8 +95,8 @@ function PrincipalTabs() {
         }}
       />
       <Drawer.Screen 
-        name="Login" 
-        component={Login}
+        name="Sair🚪" 
+        component={Sair}
         options={{
           drawerLabel: 'Sair',
           drawerIcon: ({ color, size }) => (

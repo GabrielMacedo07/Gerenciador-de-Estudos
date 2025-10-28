@@ -40,7 +40,7 @@ export default function Agenda({ navigation }) {
     
     <View style={styles.container}>
       <View style={styles.header}>
-      <Text style={styles.Adicionar}>Adicionar Materias</Text></View>
+      <Text style={styles.Adicionar}>Organize seus horarios de estudos</Text></View>
 
       <TextInput placeholder="Matéria" value={Materia} 
       onChangeText={setMateria} style={styles.input}/>
@@ -79,10 +79,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff", 
     alignItems: "center", 
     justifyContent: "flex-start",
-    paddingBottom: 50,
+    paddingBottom: 75,
   },
   header: { 
-    backgroundColor: "#38a69d", 
+    backgroundColor: "#fff", 
     paddingVertical: 40, 
     width: "100%", 
     alignItems: "center", 
@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
   Adicionar: { 
     fontSize: 25, 
     fontWeight: "bold", 
-    color: "#ecf8f8ff", 
+    color: "#38a69d", 
   },
   input: {
     borderWidth: 1,

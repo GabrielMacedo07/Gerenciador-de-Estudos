@@ -70,7 +70,7 @@ export default function Estatisticas() {
 
       return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Lançar Nota</Text>
+      <Text style={styles.titulo}>Gerencie suas notas </Text>
 
       <TextInput
         style={styles.input}
@@ -91,7 +91,11 @@ export default function Estatisticas() {
         <Text style={styles.buttonText}>Salvar Nota</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity style={[styles.button, { backgroundColor: '#ff4d4d', marginTop: 10 }]} onPress={limparNotas}>
+      <TouchableOpacity style={[styles.button, {
+         backgroundColor: '#ff4d4d', 
+         marginTop: 10 }]} 
+         onPress={limparNotas}>
+
   <Text style={styles.buttonText}>Limpar Estatísticas</Text>
 </TouchableOpacity>
 
@@ -113,7 +117,7 @@ export default function Estatisticas() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: "#fff" },
+  container: { flex: 1, padding: 20, alignItems: "center", backgroundColor: "#fff" },
   titulo: { fontSize: 22, fontWeight: "bold", marginBottom: 20 },
   input: {
     borderWidth: 1,
@@ -121,12 +125,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     padding: 10,
     marginBottom: 10,
+    width: '75%',
   },
   button: {
     backgroundColor: "#38a69d",
     padding: 12,
     borderRadius: 6,
     alignItems: "center",
+    width: '75%',
   },
   buttonText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
   notaItem: { fontSize: 16, marginVertical: 4},

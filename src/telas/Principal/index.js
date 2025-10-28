@@ -123,12 +123,12 @@ export default function Dashboard({ navigation, route }) {
         <View style={styles.userInfo}>
           <TouchableOpacity onPress={handleImagePick}>
             <Image
-              source={image ? { uri: image } : require("../../assets/logo.png")}
+              source={image ? { uri: image } : require("../../assets/usuario.png")}
               style={{ width: 80, height: 80, borderRadius: 40 }}
             />
           </TouchableOpacity>
           <View style={{ marginLeft: 10 }}>
-            <Text style={styles.aluno}>Olá, {usuario.nome}!</Text>
+            <Text style={styles.aluno}>Olá,  {usuario.nome}!</Text>
             <Text style={styles.aluno}>Curso: {usuario.curso}</Text>
             <Text style={styles.aluno}>Período: {usuario.periodo}</Text>
             <Text style={styles.aluno}>Idade: {usuario.idade}</Text>
@@ -198,7 +198,10 @@ export default function Dashboard({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#f2f2f2" },
+  container: { 
+    flex: 1, 
+    backgroundColor: "#f2f2f2" 
+  },
   header: { backgroundColor: "#38a69d", paddingVertical: 40, paddingHorizontal: 10 },
   userInfo: { flexDirection: "row", alignItems: "center" },
   aluno: { color: "#fff", fontSize: 20, fontWeight: "bold" },
