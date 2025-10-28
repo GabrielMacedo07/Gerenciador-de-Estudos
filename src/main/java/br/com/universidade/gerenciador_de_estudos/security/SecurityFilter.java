@@ -32,7 +32,7 @@ public class SecurityFilter extends OncePerRequestFilter {
 
         if (token != null) {
             var email = tokenService.validarToken(token);
-            // AGORA RECEBEMOS UM OPTIONAL
+
             var optionalUsuario = usuarioRepository.findByEmail(email);
 
             // VERIFICAMOS SE O USUÁRIO FOI ENCONTRADO DENTRO DO OPTIONAL

@@ -3,7 +3,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "Usuario")
-public class Usuario { // <-- Removemos o "implements UserDetails"
+public class Usuario {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,7 +28,6 @@ public class Usuario { // <-- Removemos o "implements UserDetails"
     @Column(name = "idade", nullable = false)
     private int idade;
 
-    // Getters e Setters
     public Integer getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }
     public String getNome() { return nome; }
@@ -44,5 +43,4 @@ public class Usuario { // <-- Removemos o "implements UserDetails"
     public int getIdade() { return idade; }
     public void setIdade(int idade) { this.idade = idade; }
 
-    // Todos os métodos do UserDetails foram removidos
 }
