@@ -2,7 +2,7 @@ import React, { useState} from 'react';
 import { Text, StyleSheet, TextInput, TouchableOpacity, Alert, ScrollView , KeyboardAvoidingView , Platform } from "react-native";
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native'; 
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../servicos/api';
 
 export default function Cadastro() {
   const navigation = useNavigation();
@@ -11,7 +11,7 @@ export default function Cadastro() {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [confirmarSenha, setConfirmarSenha] = useState('');
-
+  const [loading, setLoading] = useState(false);
 
 
   const handleRegister = async () => {
@@ -24,76 +24,92 @@ export default function Cadastro() {
       Alert.alert('Erro', 'As senhas não coincidem.');
       return;    
   }
+
+  const dadosUsuario = {
+        nome: nome,
+        email: email,
+        senha: senha
+    };
     
     try {
-    const usuario = { nome, email, senha };
-    await AsyncStorage.setItem('@usuario', JSON.stringify(usuario));
+
+    await api.post('/usuarios', dadosUsuario);
     Alert.alert('Cadastro', 'Usuário cadastrado com sucesso!');
     navigation.navigate('Login');
+    
   } catch (error) {
-    Alert.alert('Erro', 'Não foi possível salvar os dados.');
-    console.log(error);
+    console.log(error.response ? error.response.data : error.message);
+      if (error.response) {
+        Alert.alert('Erro no cadastro', 'Verifique os dados. O email pode já estar em uso.');
+      } else {
+        Alert.alert('Erro de Conexão', 'Não foi possível se conectar ao servidor.');
+      }
+  } finally {
+    setLoading(false);
   }
 };
 
     return (
       <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-
       <ScrollView  contentContainerStyle={styles.scrollViewContent}>
-      {/* Cabeçalho */}
+        <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerHeader}>
+          <Text style={styles.message}>Crie sua conta</Text>
+        </Animatable.View>
 
-      <Animatable.View animation="fadeInLeft" delay={500} style={styles.containerHeader}>
-        <Text style={styles.message}>Crie sua conta</Text>
-      </Animatable.View>
+        <Animatable.View animation="fadeInUp" style={styles.containerForm}>
+          <Text style={styles.title}>Nome</Text>
+          <TextInput 
+            placeholder="Digite seu nome..."
+            style={styles.input}
+            value={nome}
+            onChangeText={setNome}
+          />
 
-      {/* Formulário */}
-      <Animatable.View animation="fadeInUp" style={styles.containerForm}>
-        <Text style={styles.title}>Nome</Text>
-        <TextInput 
-          placeholder="Digite seu nome..."
-          style={styles.input}
-          value={nome}
-          onChangeText={setNome}
-        />
+          <Text style={styles.title}>Email</Text>
+          <TextInput 
+            placeholder="Digite seu email..."
+            style={styles.input}
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
 
-        <Text style={styles.title}>Email</Text>
-        <TextInput 
-          placeholder="Digite seu email..."
-          style={styles.input}
-          keyboardType="email-address"
-          value={email}
-          onChangeText={setEmail}
-        />
+          <Text style={styles.title}>Senha</Text>
+          <TextInput 
+            placeholder="Digite sua senha..."
+            style={styles.input}
+            secureTextEntry
+            value={senha}
+            onChangeText={setSenha}
+          />
 
-        <Text style={styles.title}>Senha</Text>
-        <TextInput 
-          placeholder="Digite sua senha..."
-          style={styles.input}
-          secureTextEntry
-          value={senha}
-          onChangeText={setSenha}
-        />
+          <Text style={styles.title}>Confirmar Senha</Text>
+          <TextInput 
+            placeholder="Confirme sua senha..."
+            style={styles.input}
+            secureTextEntry
+            value={confirmarSenha}
+            onChangeText={setConfirmarSenha}  
+          />
+          
+          <TouchableOpacity 
+            style={styles.button} 
+            onPress={handleRegister} 
+            disabled={loading}
+          >
+            <Text style={styles.buttonText}>
+              {loading ? 'Cadastrando...' : 'Cadastrar'}
+            </Text>
+          </TouchableOpacity>
 
-        <Text style={styles.title}>Confirmar Senha</Text>
-        <TextInput 
-          placeholder="Confirme sua senha..."
-          style={styles.input}
-          secureTextEntry
-          value={confirmarSenha}
-          onChangeText={setConfirmarSenha}  
-        />
-<TouchableOpacity style={styles.button} onPress={handleRegister}>
-          <Text style={styles.buttonText}>Cadastrar</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          style={styles.buttonLogin}
-          onPress={() => navigation.navigate('Login')}
-        >
-          <Text style={styles.loginText}>Já possui conta? Faça login</Text>
-        </TouchableOpacity>
-      </Animatable.View>
-    </ScrollView>
+          <TouchableOpacity 
+            style={styles.buttonLogin}
+            onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.loginText}>Já possui conta? Faça login</Text>
+          </TouchableOpacity>
+        </Animatable.View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 

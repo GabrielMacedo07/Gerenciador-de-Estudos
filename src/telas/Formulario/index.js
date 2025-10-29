@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ScrollView } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Alert, StyleSheet, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Animatable from 'react-native-animatable';
+import api from '../servicos/api';
 
 export default function Formulario() {
   const navigation = useNavigation();
@@ -10,21 +11,38 @@ export default function Formulario() {
   const [curso, setCurso] = useState('');
   const [periodo, setPeriodo] = useState('');
   const [idade, setIdade] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleEnviar = async () => {
-    if (!nome || !curso || !periodo || !idade) {
-      Alert.alert('Erro', 'Preencha todos os campos');
+    if (!curso || !periodo || !idade) {
+      Alert.alert('Erro', 'Por favor, preencha todos os campos.');
       return;
     }
+    setLoading(true);
 
-    const usuario = { nome, curso, periodo, idade, senha: '123' };
-    await AsyncStorage.setItem('@usuario', JSON.stringify(usuario));
-    await AsyncStorage.setItem('@formulario_preenchido', 'true');
+    const dadosFormulario = {
+      curso: curso,
+      periodoAtual: periodo, // Lembre-se que no backend é 'periodoAtual'
+      idade: parseInt(idade)
+    };
 
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'Principal', params: usuario }],
-    });
+    try {
+      // 4. Chame o novo endpoint PATCH
+      // A autenticação (token) já é enviada automaticamente
+      // pois configuramos o 'api' no login.
+      await api.patch('/usuarios/completar-perfil', dadosFormulario);
+
+      Alert.alert('Sucesso!', 'Seu perfil foi completado.');
+      
+      // 5. Navegue para a tela principal
+      navigation.navigate('Principal');
+
+    } catch (error) {
+      console.log(error.response ? error.response.data : error.message);
+      Alert.alert('Erro', 'Não foi possível salvar seu perfil. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

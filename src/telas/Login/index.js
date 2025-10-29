@@ -1,45 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import api from '../servicos/api';
 
 export default function Login() {
   const navigation = useNavigation();
 
-  const [nome, setNome] = useState('');
+  const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [usuarioSalvo, setUsuarioSalvo] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const carregarUsuario = async () => {
-      const jsonValue = await AsyncStorage.getItem('@usuario');
-      if (jsonValue) setUsuarioSalvo(JSON.parse(jsonValue));
-    };
-    carregarUsuario();
-  }, []);
-
-  const handleLogin = () => {
-    if (!nome || !senha) {
+  const handleLogin = async () => {
+    if (!email || !senha) {
       Alert.alert('Erro', 'Preencha todos os campos');
       return;
     }
 
-    if (usuarioSalvo && nome === usuarioSalvo.nome && senha === usuarioSalvo.senha) {
-      Alert.alert('Login', `Bem-vindo(a) ${usuarioSalvo.nome}!`);
+    setLoading(true);
+
+    try {
+      const response = await api.post('/api/auth/login' , {
+        email: email,
+        senha: senha
+      });
+
+      const{ token } = response.data;
+
+      await AsyncStorage.setItem('@token', token);
+
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+      Alert.alert('Login', `Bem-vindo(a)!`);
+
       navigation.navigate('Formulario');
-    } else {
-      Alert.alert('Erro', 'Nome ou senha incorretos');
+      
+    } catch (error) {
+      console.log(error.response ? error.response.data : error.message);
+      Alert.alert('Erro', 'Email ou senha incorretos');
+    } finally {
+      setLoading(false);
     }
-    const verificarPrimeiroAcesso = async () => {
-      const primeiro =  await AsyncStorage.getItem('@primeiro_acesso');
-      if (primeiro === null || primeiro === 'true') {
-        navigation.replaceParams("Formulario");
-      } else {
-        navigation.replaceParams("Principal");
-      }
-    };
-    verificarPrimeiroAcesso();
 
   };
 
@@ -50,17 +52,21 @@ export default function Login() {
       </Animatable.View>
 
       <Animatable.View animation="fadeInUp" style={styles.containerForm}>
-        <Text style={styles.title}>Nome</Text>
+        <Text style={styles.title}>Email</Text>
 
-        <TextInput style={styles.input} value={nome} onChangeText={setNome} 
-        placeholder="Digite seu nome..." />
+        <TextInput style={styles.input} value={email} onChangeText={setEmail} 
+        placeholder="Digite seu email..." 
+        keyboardType='email-address'
+        />
 
         <Text style={styles.title}>Senha</Text>
         <TextInput style={styles.input} value={senha} onChangeText={setSenha} 
         secureTextEntry placeholder="Digite sua senha..." />
 
-        <TouchableOpacity style={styles.button} onPress={handleLogin}>
-          <Text style={styles.buttonText}>Acessar</Text>
+        <TouchableOpacity style={styles.button} 
+        onPress={handleLogin}
+        disabled={loading}>
+          <Text style={styles.buttonText}>{loading ? 'Entrando...' : 'Acessar'}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.buttonLogin} onPress={() => navigation.navigate('Cadastro')}>
