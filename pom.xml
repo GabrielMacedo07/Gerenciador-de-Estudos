@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>br.com.universidade</groupId>
-	<artifactId>gerenciador-de-estudos</artifactId>
+	<artifactId>api</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>gerenciador-de-estudos</name>
 	<description>Demo project for Spring Boot</description>

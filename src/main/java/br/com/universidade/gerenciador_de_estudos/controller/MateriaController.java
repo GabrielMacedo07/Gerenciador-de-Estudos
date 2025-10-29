@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/materias") // Todos os endpoints aqui começarão com /materias
+@RequestMapping("/materias")
 @CrossOrigin("*")
 public class MateriaController {
 

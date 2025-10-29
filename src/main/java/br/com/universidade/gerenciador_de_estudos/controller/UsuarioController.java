@@ -1,11 +1,12 @@
 package br.com.universidade.gerenciador_de_estudos.controller;
 
+import br.com.universidade.gerenciador_de_estudos.dto.FormularioDTO;
 import br.com.universidade.gerenciador_de_estudos.model.Usuario;
 import br.com.universidade.gerenciador_de_estudos.service.UsuarioService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -52,4 +53,14 @@ public class UsuarioController {
             return ResponseEntity.notFound().build(); // 404 Not Found
         }
     }
+    @PatchMapping("/completar-perfil")
+    public ResponseEntity<Usuario> completarPerfil(@RequestBody FormularioDTO dados) {
+        try {
+            Usuario usuarioAtualizado = service.completarCadastro(dados);
+            return ResponseEntity.ok(usuarioAtualizado);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
 }

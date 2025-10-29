@@ -13,10 +13,10 @@ public class Usuario {
     @Column(name = "nome", nullable = false, length = 100)
     private String nome;
 
-    @Column(name = "curso", nullable = false, length = 100)
+    @Column(name = "curso", nullable = true, length = 100)
     private String curso;
 
-    @Column(name = "periodo_atual", nullable = false, length = 20)
+    @Column(name = "periodo_atual", nullable = true, length = 20)
     private String periodoAtual;
 
     @Column(name = "email", nullable = false, unique = true, length = 100)
@@ -25,8 +25,8 @@ public class Usuario {
     @Column(name = "senha", nullable = false, length = 255)
     private String senha;
 
-    @Column(name = "idade", nullable = false)
-    private int idade;
+    @Column(name = "idade", nullable = true)
+    private Integer idade;
 
     public Integer getIdUsuario() { return idUsuario; }
     public void setIdUsuario(Integer idUsuario) { this.idUsuario = idUsuario; }
@@ -40,7 +40,7 @@ public class Usuario {
     public void setEmail(String email) { this.email = email; }
     public String getSenha() { return senha; }
     public void setSenha(String senha) { this.senha = senha; }
-    public int getIdade() { return idade; }
-    public void setIdade(int idade) { this.idade = idade; }
+    public Integer getIdade() { return idade; }
+    public void setIdade(Integer idade) { this.idade = idade; }
 
 }
