@@ -1,4 +1,3 @@
-
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Feather } from '@expo/vector-icons';
 import 'react-native-gesture-handler';
@@ -45,10 +44,10 @@ function PrincipalTabs() {
         }}
       />
       <Drawer.Screen 
-        name="Adicionar Tarefas 📚" 
+        name="Adicionar Matérias 📚" 
         component={Tarefas}
         options={{
-          drawerLabel: 'Adicionar Tarefas',
+          drawerLabel: 'Adicionar Matérias',
           drawerIcon: ({ color, size }) => (
             <Feather name="plus-square" size={size} color={color} />
           ),

@@ -1,131 +1,277 @@
-import React, { useState } from "react";
-import { View, TextInput, Button, StyleSheet, Text, FlatList, TouchableOpacity } from "react-native";
+import React, { useState, useCallback } from "react";
+// 1. Importamos ScrollView e ActivityIndicator
+import {
+  View,
+  TextInput,
+  Button,
+  StyleSheet,
+  Text,
+  ScrollView, // <-- Usando ScrollView
+  TouchableOpacity,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import { useFocusEffect } from '@react-navigation/native';
+import { Feather } from '@expo/vector-icons';
+import api from '../servicos/api'; 
 
 export default function Tarefas({ navigation }) {
-  const [Materia, setMateria] = useState("");
-  const [Pagina, setPagina] = useState("");
-  const [Data, setData] = useState("");
-  const [listaDeTarefas, setListaDeTarefas] = useState([]);
+  
 
-  const adicionarTarefa = () => {
-    if (!Materia.trim() || !Pagina.trim() || !Data.trim()) {
-      alert("Preencha todos os campos antes de adicionar!");
+  const [nomeMateria, setNomeMateria] = useState("");
+  const [tema, setTema] = useState("");
+  const [materias, setMaterias] = useState([]); 
+  const [idEditando, setIdEditando] = useState(null); 
+  const [loadingLista, setLoadingLista] = useState(true);
+  const [loadingSubmit, setLoadingSubmit] = useState(false);
+
+  const carregarMaterias = async () => {
+    setLoadingLista(true);
+    try {
+      const response = await api.get('/materias');
+      setMaterias(response.data);
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Erro", "Não foi possível carregar suas matérias.");
+    } finally {
+      setLoadingLista(false);
+    }
+  };
+
+  const handleSalvarMateria = async () => {
+    if (!nomeMateria.trim() || !tema.trim()) {
+      Alert.alert("Erro", "Preencha o nome da matéria e o tema.");
       return;
     }
-    const novaTarefa = { 
-      id: Date.now().toString(), Materia, Pagina, Data };
-    setListaDeTarefas([...listaDeTarefas, novaTarefa]);
-    setMateria(""); setPagina(""); setData("");
-  };
+    setLoadingSubmit(true);
 
-  const excluirTarefa = (id) => setListaDeTarefas(listaDeTarefas.filter(t => t.id !== id));
+    const dadosMateria = {
+      nomeMateria: nomeMateria,
+      tema: tema
+    };
 
-  const enviarTarefas = () => {
-    if (listaDeTarefas.length === 0) { alert("Adicione pelo menos uma tarefa!"); return; }
-
-    // Navega para o Dashboard dentro da aba Home
-    navigation.navigate("Principal", {
-      screen: "Home",
-      params: {
-        screen: "Dashboard",
-        params: { listaDeTarefas }
+    try {
+      if (idEditando) {
+        await api.put(`/materias/${idEditando}`, dadosMateria);
+        Alert.alert("Sucesso!", "Matéria atualizada.");
+      } else {
+        await api.post('/materias', dadosMateria);
+        Alert.alert("Sucesso!", "Matéria cadastrada.");
       }
-    });
+      
+      limparFormulario();
+      carregarMaterias(); 
+
+    } catch (error) {
+      console.log(error.response ? error.response.data : error.message);
+      Alert.alert("Erro", "Não foi possível salvar a matéria.");
+    } finally {
+      setLoadingSubmit(false);
+    }
   };
+
+
+  const handleDeletarMateria = async (id) => {
+    Alert.alert(
+      "Confirmar Exclusão",
+      "Tem certeza que deseja excluir esta matéria?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { 
+          text: "Excluir", 
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await api.delete(`/materias/${id}`);
+              Alert.alert("Sucesso!", "Matéria excluída.");
+              carregarMaterias(); 
+            } catch (error) {
+              console.log(error);
+              Alert.alert("Erro", "Não foi possível excluir a matéria.");
+            }
+          }
+        }
+      ]
+    );
+  };
+
+
+  const iniciarEdicao = (materia) => {
+    setIdEditando(materia.idMateria);
+    setNomeMateria(materia.nomeMateria);
+    setTema(materia.tema);
+  };
+
+  const limparFormulario = () => {
+    setIdEditando(null);
+    setNomeMateria("");
+    setTema("");
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      carregarMaterias();
+    }, [])
+  );
+
 
   return (
-      
 
-    
-    <View style={styles.container}>
-      <View style={styles.header}>
-      <Text style={styles.Adicionar}>Adicione suas tarefas do diárias</Text></View>
-
-      <TextInput placeholder="Matéria" value={Materia} 
-      onChangeText={setMateria} style={styles.input}/>
+    <ScrollView 
+      style={styles.container} 
+      contentContainerStyle={styles.scrollContainer}
+    >
       
-      <TextInput placeholder="Página" value={Pagina} 
-      onChangeText={setPagina} style={styles.input}/>
-      
-      <TextInput placeholder="Data" value={Data} 
-      onChangeText={setData} style={styles.input}/>
+      {}
 
-      <Button title="Adicionar Tarefa" color="#38a69d" onPress={adicionarTarefa} />
-      <FlatList
-        style={styles.listaPreview}
-        data={listaDeTarefas}
-        keyExtractor={item => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.item}>
-            <Text>{item.Materia} - {item.Pagina} - {item.Data}</Text>
-            <TouchableOpacity onPress={() => excluirTarefa(item.id)}>
-              <Text style={styles.excluir}>❌</Text>
-            </TouchableOpacity>
-          </View>
+      {/* Formulário de Criação/Edição */}
+      <View style={styles.formContainer}>
+        <Text style={styles.formTitle}>
+          {idEditando ? "Editando Matéria" : "Adicionar Nova Matéria"}
+        </Text>
+
+        <TextInput 
+          placeholder="Nome da Matéria" 
+          value={nomeMateria} 
+          onChangeText={setNomeMateria} 
+          style={styles.input}
+        />
+        
+        <TextInput 
+          placeholder="Tema Principal" 
+          value={tema} 
+          onChangeText={setTema} 
+          style={styles.input}
+        />
+        
+        <Button 
+          title={loadingSubmit ? "Salvando..." : (idEditando ? "Atualizar Matéria" : "Adicionar Matéria")}
+          color="#38a69d" 
+          onPress={handleSalvarMateria} 
+          disabled={loadingSubmit}
+        />
+        
+        {idEditando && (
+          <TouchableOpacity style={styles.cancelButton} onPress={limparFormulario}>
+            <Text style={styles.cancelText}>Cancelar Edição</Text>
+          </TouchableOpacity>
         )}
-      />
-      <Button title="Concluir e Enviar" color="#38a69d" onPress={enviarTarefas} />
-    </View>
+      </View>
+
+      {/* Título da Lista */}
+      <Text style={styles.listTitle}>Matérias Cadastradas</Text>
+
+      {/* Lista de Materias */}
+      {loadingLista ? (
+        <ActivityIndicator size="large" color="#38a69d" style={{ marginTop: 20 }} />
+      ) : (
+        materias.length === 0 ? (
+          <Text style={styles.emptyText}>Nenhuma matéria cadastrada ainda.</Text>
+        ) : (
+          <View>
+            {materias.map((item) => (
+              <View style={styles.item} key={item.idMateria.toString()}>
+                <View style={styles.itemTextContainer}>
+                  <Text style={styles.itemMateria}>{item.nomeMateria}</Text>
+                  <Text style={styles.itemTema}>{item.tema}</Text>
+                </View>
+                <View style={styles.itemButtons}>
+                  <TouchableOpacity onPress={() => iniciarEdicao(item)}>
+                    <Feather name="edit-2" size={20} color="#007bff" />
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleDeletarMateria(item.idMateria)}>
+                    <Feather name="trash-2" size={20} color="#dc3545" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ))}
+          </View>
+        )
+      )}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { 
     flex: 1,
-    backgroundColor: "#fff", 
-    alignItems: "center", 
-    justifyContent: "flex-start",
-    paddingBottom: 50,
+    backgroundColor: "#f4f4f4",
   },
-  header: { 
-    backgroundColor: "#ffffffff", 
-    paddingVertical: 40, 
-    width: "100%", 
-    alignItems: "center", 
-    justifyContent: "center",
-    marginBottom: 20,
-  
-    
+  scrollContainer: {
+    paddingBottom: 50, 
   },
-  Adicionar: { 
-    fontSize: 25, 
-    fontWeight: "bold", 
-    color: "#38a69d", 
+
+  formContainer: {
+    backgroundColor: '#fff',
+    padding: 20,
+    marginHorizontal: 10,
+    borderRadius: 8,
+    elevation: 2,
+    marginTop: 40, 
+  },
+  formTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 15,
+    textAlign: 'center',
   },
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    width: "75%",
+    width: "100%",
     padding: 10,
     marginBottom: 10,
-    borderRadius: 15,
+    borderRadius: 8,
+    backgroundColor: '#fff',
   },
-  listaPreview: { 
-    marginTop: 20, 
-    width: "100%" 
+  cancelButton: {
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  cancelText: {
+    color: '#007bff',
+  },
+  listTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    marginTop: 25,
+    marginBottom: 10,
+    marginLeft: 15,
   },
   item: { 
     flexDirection: "row", 
     justifyContent: "space-between", 
-    paddingVertical: 12, 
-    paddingHorizontal: 8,
-    borderBottomWidth: 1, 
-    borderColor: "#f80909ff" 
-  },
-  excluir: { 
-    color: "red", 
-    fontSize: 16 
-  },
-  addButton: {
-    alignSelf: "center",
-    backgroundColor: "#e6e6e6",
+    alignItems: 'center',
+    padding: 15,
+    marginHorizontal: 10,
+    marginBottom: 10,
+    borderWidth: 1, 
+    borderColor: "#ddd",
     borderRadius: 8,
-    padding: 12,
-    marginTop: 10,
+    backgroundColor: '#fff',
   },
-  addText: { 
-    fontSize: 20, 
-    fontWeight: "bold", 
-    color: "#333" 
+  itemTextContainer: {
+    flex: 1,
   },
+  itemMateria: {
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  itemTema: {
+    fontSize: 14,
+    color: '#666',
+  },
+  itemButtons: {
+    flexDirection: 'row',
+    width: 60,
+    justifyContent: 'space-between',
+  },
+  emptyText: {
+    textAlign: 'center',
+    marginTop: 20,
+    fontSize: 16,
+    color: '#888',
+  }
 });

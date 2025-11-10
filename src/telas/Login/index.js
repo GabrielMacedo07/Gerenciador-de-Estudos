@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import * as Animatable from 'react-native-animatable';
 import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage'; 
-import api from '../servicos/api';
+import { useAuth } from '../../contexts/AuthContext';
+
 
 export default function Login() {
   const navigation = useNavigation();
 
+  const { login, loading } = useAuth();
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
-  const [loading, setLoading] = useState(false);
 
   const handleLogin = async () => {
     if (!email || !senha) {
@@ -18,29 +18,13 @@ export default function Login() {
       return;
     }
 
-    setLoading(true);
-
     try {
-      const response = await api.post('/api/auth/login' , {
-        email: email,
-        senha: senha
-      });
-
-      const{ token } = response.data;
-
-      await AsyncStorage.setItem('@token', token);
-
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
-      Alert.alert('Login', `Bem-vindo(a)!`);
+      await login(email, senha);
 
       navigation.navigate('Formulario');
       
     } catch (error) {
-      console.log(error.response ? error.response.data : error.message);
-      Alert.alert('Erro', 'Email ou senha incorretos');
-    } finally {
-      setLoading(false);
+      Alert.alert('Erro no login', error.message);
     }
 
   };
@@ -53,19 +37,28 @@ export default function Login() {
 
       <Animatable.View animation="fadeInUp" style={styles.containerForm}>
         <Text style={styles.title}>Email</Text>
-
-        <TextInput style={styles.input} value={email} onChangeText={setEmail} 
+        <TextInput 
+        style={styles.input} 
+        value={email} 
+        onChangeText={setEmail} 
         placeholder="Digite seu email..." 
         keyboardType='email-address'
+        autoCapitalize='none'
         />
 
         <Text style={styles.title}>Senha</Text>
-        <TextInput style={styles.input} value={senha} onChangeText={setSenha} 
-        secureTextEntry placeholder="Digite sua senha..." />
+        <TextInput 
+        style={styles.input} 
+        value={senha} 
+        onChangeText={setSenha} 
+        secureTextEntry 
+        placeholder="Digite sua senha..." />
 
-        <TouchableOpacity style={styles.button} 
+        <TouchableOpacity 
+        style={styles.button} 
         onPress={handleLogin}
-        disabled={loading}>
+        disabled={loading}
+        >
           <Text style={styles.buttonText}>{loading ? 'Entrando...' : 'Acessar'}</Text>
         </TouchableOpacity>
 

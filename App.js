@@ -1,26 +1,21 @@
-
 import React from 'react';
-
-import { View, Platform, StatusBar as RNStatusBar } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import Rotas from './src/rotas';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 
+// 1. Importe o AuthProvider que criamos
+import { AuthProvider } from './src/contexts/AuthContext';
+
+// 2. Importe seu arquivo de rotas
+import Rotas from './src/rotas'; // Assumindo que o arquivo é 'src/rotas/index.js'
 
 export default function App() {
   return (
-    <NavigationContainer>
-      {/* StatusBar do Expo apenas para o estilo do texto */}
-      <StatusBar style="dark" />
-
-      {/* View para cor de fundo da StatusBar */}
-      {Platform.OS === 'android' && (
-        <View style={{
-          height: RNStatusBar.currentHeight,
-          backgroundColor: '#ffffffff'
-        }} />
-      )}
-      <Rotas />
-    </NavigationContainer>
-  );  
+    // 3. Envolva o NavigationContainer com o AuthProvider
+    <AuthProvider>
+      <NavigationContainer>
+        <StatusBar backgroundColor="#38a69d" barStyle="light-content" />
+        <Rotas /> 
+      </NavigationContainer>
+    </AuthProvider>
+  );
 }

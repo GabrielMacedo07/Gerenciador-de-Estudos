@@ -22,19 +22,16 @@ export default function Formulario() {
 
     const dadosFormulario = {
       curso: curso,
-      periodoAtual: periodo, // Lembre-se que no backend é 'periodoAtual'
+      periodoAtual: periodo, 
       idade: parseInt(idade)
     };
 
     try {
-      // 4. Chame o novo endpoint PATCH
-      // A autenticação (token) já é enviada automaticamente
-      // pois configuramos o 'api' no login.
+    
       await api.patch('/usuarios/completar-perfil', dadosFormulario);
 
       Alert.alert('Sucesso!', 'Seu perfil foi completado.');
       
-      // 5. Navegue para a tela principal
       navigation.navigate('Principal');
 
     } catch (error) {
