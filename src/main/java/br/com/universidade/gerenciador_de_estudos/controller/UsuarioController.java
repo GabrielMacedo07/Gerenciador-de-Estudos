@@ -20,25 +20,20 @@ public class UsuarioController {
 
     @GetMapping
     public List<Usuario> listaUsuarios() {
-        // Chama o método que criamos no Service
         return service.listarTodos();
     }
 
     @PostMapping
     public Usuario criarUsuario(@RequestBody Usuario usuario) {
-        // CORRETO: Chama o service, que criptografa a senha
         return service.criarUsuario(usuario);
     }
 
     @PutMapping("/{idUsuario}")
     public ResponseEntity<Usuario> editarUsuario(@PathVariable Integer idUsuario, @RequestBody Usuario usuario) {
-        // Chama a lógica de edição robusta do Service
         try {
             Usuario usuarioAtualizado = service.editarUsuario(idUsuario, usuario);
-            // Retorna 200 OK com o usuário atualizado
             return ResponseEntity.ok(usuarioAtualizado);
         } catch (RuntimeException e) {
-            // Se o service não encontrar o usuário, retorna 404 Not Found
             return ResponseEntity.notFound().build();
         }
     }
