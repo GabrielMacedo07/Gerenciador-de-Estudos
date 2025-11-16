@@ -2,8 +2,9 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Feather } from '@expo/vector-icons';
 import 'react-native-gesture-handler';
 import { createDrawerNavigator } from '@react-navigation/drawer';
-
-
+import React from 'react';
+import { View, ActivityIndicator } from 'react-native';
+import { useAuth } from '../contexts/AuthContext';
 
 import Welcome from '../telas/Welcome';
 import Login from '../telas/Login';
@@ -15,6 +16,7 @@ import Estatisticas from '../telas/Estatiticas';
 import Aulas from '../telas/Aulas';
 import Formulario from '../telas/Formulario';
 import Sair from '../telas/Sair';
+import Materias from '../telas/Materias';
 
 
 const Stack = createNativeStackNavigator();
@@ -24,6 +26,25 @@ function DashboardStack() {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Dashboard" component={Dashboard} />
+    </Stack.Navigator>
+  );
+}
+
+function AuthStack() {
+  return (
+    <Stack.Navigator screenOptions = {{ headerShown: false }}>
+      <Stack.Screen name ="Welcome" component={Welcome} />
+      <Stack.Screen name ="Login" component={Login} />
+      <Stack.Screen name ="Cadastro" component={Cadastro} />
+    </Stack.Navigator>
+  );
+}
+
+function FormularioStack() {
+  return (
+    <Stack.Navigator screenOptions = {{ headerShown: false }}>
+      <Stack.Screen name ="Formulario" component={Formulario} />
+      <Stack.Screen name ="Sair" component={Sair} />
     </Stack.Navigator>
   );
 }
@@ -44,10 +65,20 @@ function PrincipalTabs() {
         }}
       />
       <Drawer.Screen 
-        name="Adicionar Matérias 📚" 
+        name="Gerenciar Matérias 📚" 
+        component={Materias}
+        options={{
+          drawerLabel: 'Gerenciar Matérias',
+          drawerIcon: ({ color, size }) => (
+            <Feather name="plus-square" size={size} color={color} />
+          ),
+        }}
+      />
+      <Drawer.Screen 
+        name="Gerenciar Tarefas 📚" 
         component={Tarefas}
         options={{
-          drawerLabel: 'Adicionar Matérias',
+          drawerLabel: 'Gerenciar Tarefas',
           drawerIcon: ({ color, size }) => (
             <Feather name="plus-square" size={size} color={color} />
           ),
@@ -109,18 +140,32 @@ function PrincipalTabs() {
 
 // Stack principal do app
 export default function Rotas() {
-  return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Welcome" component={Welcome} />
-      <Stack.Screen name="Login" component={Login} />
-      <Stack.Screen name="Cadastro" component={Cadastro} />
-      <Stack.Screen name="Principal" component={PrincipalTabs} />
-      <Stack.Screen name="Agenda" component={Agenda} />
-      <Stack.Screen name="Estatísticas" component={Estatisticas} />
-      <Stack.Screen name="Aulas" component={Aulas} />
-      <Stack.Screen name="Tarefas" component={Tarefas} />
-      <Stack.Screen name="Formulario" component={Formulario} />
+
+  const { isLoggedIn, user, loading } = useAuth();
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF' }}>
+        <ActivityIndicator size="large" color="#38a69d" />
+      </View>
+    );
+  }
+
+  if (isLoggedIn) {
+    if (user && user.curso !== null) {
+      return <PrincipalTabs />;
+
+    } else if (user && user.curso === null) {
+      return <FormularioStack />;
     
-    </Stack.Navigator>
-  );
+    } else {
+      return (
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF' }}>
+          <ActivityIndicator size="large" color="#38a69d" />
+        </View>
+      );
+    }
+  } else {
+    return <AuthStack />;
+  }
 }

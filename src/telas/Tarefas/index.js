@@ -1,194 +1,250 @@
 import React, { useState, useCallback } from "react";
-// 1. Importamos ScrollView e ActivityIndicator
 import {
   View,
   TextInput,
   Button,
   StyleSheet,
   Text,
-  ScrollView, // <-- Usando ScrollView
+  FlatList,
   TouchableOpacity,
   Alert,
   ActivityIndicator,
 } from "react-native";
-import { useFocusEffect } from '@react-navigation/native';
-import { Feather } from '@expo/vector-icons';
-import api from '../servicos/api'; 
+import { useFocusEffect } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
+import { Feather } from "@expo/vector-icons";
+import CheckBox from "expo-checkbox";
+import api from "../servicos/api";
 
-export default function Tarefas({ navigation }) {
-  
+export default function GerenciarTarefas() {
 
-  const [nomeMateria, setNomeMateria] = useState("");
-  const [tema, setTema] = useState("");
   const [materias, setMaterias] = useState([]); 
-  const [idEditando, setIdEditando] = useState(null); 
-  const [loadingLista, setLoadingLista] = useState(true);
+  const [selectedMateria, setSelectedMateria] = useState(null);
+
+  const [tema, setTema] = useState("");
+  const [descricao, setDescricao] = useState("");
+  const [dataEntrega, setDataEntrega] = useState("");
+  const [tarefas, setTarefas] = useState([]);
+  const [idEditando, setIdEditando] = useState(null);
+
+  const [loadingMaterias, setLoadingMaterias] = useState(true);
+  const [loadingTarefas, setLoadingTarefas] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
   const carregarMaterias = async () => {
-    setLoadingLista(true);
+    setLoadingMaterias(true);
     try {
-      const response = await api.get('/materias');
-      setMaterias(response.data);
-    } catch (error) {
-      console.log(error);
+      const response = await api.get("/materias");
+      setMaterias(response.data || []);
+    } catch (e) {
       Alert.alert("Erro", "Não foi possível carregar suas matérias.");
     } finally {
-      setLoadingLista(false);
+      setLoadingMaterias(false);
     }
   };
 
-  const handleSalvarMateria = async () => {
-    if (!nomeMateria.trim() || !tema.trim()) {
-      Alert.alert("Erro", "Preencha o nome da matéria e o tema.");
+  const carregarTarefasDaMateria = async (idMateria) => {
+    if (!idMateria) {
+      setTarefas([]);
       return;
     }
+    setLoadingTarefas(true);
+    try {
+      const response = await api.get(`/materias/${idMateria}/tarefas`);
+      setTarefas(response.data || []);
+    } catch (e) {
+      Alert.alert("Erro", "Não foi possível carregar as tarefas.");
+    } finally {
+      setLoadingTarefas(false);
+    }
+  };
+
+  const handleSalvarTarefa = async () => {
+    if (!selectedMateria) {
+      Alert.alert("Erro", "Por favor, selecione uma matéria.");
+      return;
+    }
+    if (!tema.trim()) {
+      Alert.alert("Erro", "Por favor, preencha o Tema da tarefa.");
+      return;
+    }
+
     setLoadingSubmit(true);
 
-    const dadosMateria = {
-      nomeMateria: nomeMateria,
-      tema: tema
+    const dadosTarefa = {
+      tema: tema,
+      descricao: descricao.trim() || null,
+      dataEntrega: dataEntrega.trim() || null,
     };
 
     try {
       if (idEditando) {
-        await api.put(`/materias/${idEditando}`, dadosMateria);
-        Alert.alert("Sucesso!", "Matéria atualizada.");
+        await api.put(`/tarefas/${idEditando}`, dadosTarefa);
+        Alert.alert("Sucesso", "Tarefa atualizada!");
       } else {
-        await api.post('/materias', dadosMateria);
-        Alert.alert("Sucesso!", "Matéria cadastrada.");
+        await api.post(`/materias/${selectedMateria}/tarefas`, dadosTarefa);
       }
-      
-      limparFormulario();
-      carregarMaterias(); 
 
-    } catch (error) {
-      console.log(error.response ? error.response.data : error.message);
-      Alert.alert("Erro", "Não foi possível salvar a matéria.");
+      limparFormulario();
+      carregarTarefasDaMateria(selectedMateria);
+    } catch (erro) {
+      console.log(erro);
+      Alert.alert("Erro", "Ocorreu um erro ao salvar a tarefa.");
     } finally {
       setLoadingSubmit(false);
     }
   };
 
-
-  const handleDeletarMateria = async (id) => {
-    Alert.alert(
-      "Confirmar Exclusão",
-      "Tem certeza que deseja excluir esta matéria?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        { 
-          text: "Excluir", 
-          style: "destructive",
-          onPress: async () => {
-            try {
-              await api.delete(`/materias/${id}`);
-              Alert.alert("Sucesso!", "Matéria excluída.");
-              carregarMaterias(); 
-            } catch (error) {
-              console.log(error);
-              Alert.alert("Erro", "Não foi possível excluir a matéria.");
-            }
-          }
-        }
-      ]
-    );
+  const handleToggleCheckbox = async (tarefa) => {
+    const novoStatus = !tarefa.concluido;
+    try {
+      await api.patch(`/tarefas/${tarefa.idTarefa}/status`, {
+        concluida: novoStatus,
+      });
+      setTarefas(
+        tarefas.map((t) =>
+          t.idTarefa === tarefa.idTarefa ? { ...t, concluida: novoStatus } : t
+        )
+      );
+    } catch (error) {
+      console.log(error);
+      Alert.alert("Erro", "Não foi possível atualizar o status da tarefa.");
+    }
   };
 
-
-  const iniciarEdicao = (materia) => {
-    setIdEditando(materia.idMateria);
-    setNomeMateria(materia.nomeMateria);
-    setTema(materia.tema);
+  const handleDeletarTarefa = (idTarefa) => {
+    Alert.alert("Confirmar", "Deseja realmente excluir esta tarefa?", [
+      { text: "Cancelar" },
+      {
+        text: "Excluir",
+        style: "destructive",
+        onPress: async () => {
+          try {
+            await api.delete(`/tarefas/${idTarefa}`);
+            carregarTarefasDaMateria(selectedMateria);
+          } catch (error) {
+            Alert.alert("Erro", "Não foi possível excluir a tarefa.");
+          }
+        },
+      },
+    ]);
+  };
+  const iniciarEdicao = (tarefa) => {
+    setIdEditando(tarefa.idTarefa);
+    setTema(tarefa.tema);
+    setDescricao(tarefa.descricao || "");
+    setDataEntrega(tarefa.dataEntrega || "");
   };
 
   const limparFormulario = () => {
     setIdEditando(null);
-    setNomeMateria("");
     setTema("");
+    setDescricao("");
+    setDataEntrega("");
   };
 
   useFocusEffect(
     useCallback(() => {
       carregarMaterias();
+      return () => {
+        limparFormulario();
+        setTarefas([]);
+        setSelectedMateria(null);
+      };
     }, [])
   );
 
-
-  return (
-
-    <ScrollView 
-      style={styles.container} 
-      contentContainerStyle={styles.scrollContainer}
-    >
-      
-      {}
-
-      {/* Formulário de Criação/Edição */}
+  const renderHeader = () => (
+    <View>
+      {/* --- Formulário --- */}
       <View style={styles.formContainer}>
         <Text style={styles.formTitle}>
-          {idEditando ? "Editando Matéria" : "Adicionar Nova Matéria"}
+          {idEditando ? "Editando Tarefa" : "Adicionar Nova Tarefa"}
         </Text>
 
-        <TextInput 
-          placeholder="Nome da Matéria" 
-          value={nomeMateria} 
-          onChangeText={setNomeMateria} 
-          style={styles.input}
-        />
-        
-        <TextInput 
-          placeholder="Tema Principal" 
-          value={tema} 
-          onChangeText={setTema} 
-          style={styles.input}
-        />
-        
-        <Button 
-          title={loadingSubmit ? "Salvando..." : (idEditando ? "Atualizar Matéria" : "Adicionar Matéria")}
+        <Text style={styles.label}>Matéria</Text>
+        {loadingMaterias ? <ActivityIndicator /> : (
+          <View style={styles.pickerContainer}>
+            <Picker
+              selectedValue={selectedMateria}
+              onValueChange={(itemValue) => {
+                setSelectedMateria(itemValue);
+                carregarTarefasDaMateria(itemValue);
+                limparFormulario();
+              }}
+              style={styles.picker}
+              enabled={!idEditando}
+            >
+              <Picker.Item label="-- Escolha uma matéria --" value={null} />
+              {materias.map((materia) => (
+                <Picker.Item key={materia.idMateria} label={materia.nomeMateria} value={materia.idMateria} />
+              ))}
+            </Picker>
+          </View>
+        )}
+        <Text style={styles.label}>Tema da Tarefa</Text>
+            <TextInput style={styles.input} placeholder="Ex: Lista de Exercícios 1" value={tema} onChangeText={setTema} />
+
+        <Text style={styles.label}>Descrição (Opcional)</Text>
+        <TextInput style={styles.input} placeholder="Ex: Fazer exercícios 1 a 5" value={descricao} onChangeText={setDescricao} />
+        <Text style={styles.label}>Data de Entrega (Opcional)</Text>
+        <TextInput style={styles.input} placeholder="Ex: AAAA-MM-DD" value={dataEntrega} onChangeText={setDataEntrega} />
+        <Button
+          title={loadingSubmit ? "Salvando..." : (idEditando ? "Atualizar Tarefa" : "Salvar Tarefa")}
           color="#38a69d" 
-          onPress={handleSalvarMateria} 
+          onPress={handleSalvarTarefa} 
           disabled={loadingSubmit}
         />
-        
         {idEditando && (
           <TouchableOpacity style={styles.cancelButton} onPress={limparFormulario}>
             <Text style={styles.cancelText}>Cancelar Edição</Text>
           </TouchableOpacity>
         )}
       </View>
+      <Text style={styles.listTitle}>Tarefas Cadastradas</Text>
+    </View>
+  );
 
-      {/* Título da Lista */}
-      <Text style={styles.listTitle}>Matérias Cadastradas</Text>
+  const renderItem = ({ item }) => (
+    <View style={styles.item} key={item.idTarefa.toString()}>
+      <CheckBox
+        value={item.concluido}
+        onValueChange={() => handleToggleCheckbox(item)}
+        color={item.concluido ? "#38a69d" : undefined}
+        style={styles.checkbox}
+      />
+      <View style={[styles.itemTextContainer, { textDecorationLine: item.concluido ? 'line-through' : 'none' }]}>
+        <Text style={styles.itemMateria}>{item.tema}</Text> 
+        {item.descricao && <Text style={styles.itemTema}>{item.descricao}</Text>}
+        {item.dataEntrega && <Text style={styles.itemData}>{item.dataEntrega}</Text>}
+      </View>
+      <View style={styles.itemButtons}>
+        <TouchableOpacity onPress={() => iniciarEdicao(item)}>
+          <Feather name="edit-2" size={20} color="#007bff" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => handleDeletarTarefa(item.idTarefa)}>
+          <Feather name="trash-2" size={20} color="#dc3545" />
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 
-      {/* Lista de Materias */}
-      {loadingLista ? (
-        <ActivityIndicator size="large" color="#38a69d" style={{ marginTop: 20 }} />
-      ) : (
-        materias.length === 0 ? (
-          <Text style={styles.emptyText}>Nenhuma matéria cadastrada ainda.</Text>
-        ) : (
-          <View>
-            {materias.map((item) => (
-              <View style={styles.item} key={item.idMateria.toString()}>
-                <View style={styles.itemTextContainer}>
-                  <Text style={styles.itemMateria}>{item.nomeMateria}</Text>
-                  <Text style={styles.itemTema}>{item.tema}</Text>
-                </View>
-                <View style={styles.itemButtons}>
-                  <TouchableOpacity onPress={() => iniciarEdicao(item)}>
-                    <Feather name="edit-2" size={20} color="#007bff" />
-                  </TouchableOpacity>
-                  <TouchableOpacity onPress={() => handleDeletarMateria(item.idMateria)}>
-                    <Feather name="trash-2" size={20} color="#dc3545" />
-                  </TouchableOpacity>
-                </View>
-              </View>
-            ))}
-          </View>
-        )
+  return (
+    <FlatList
+      style={styles.container}
+      data={tarefas}
+      keyExtractor={item => item.idTarefa.toString()}
+      renderItem={renderItem}
+      ListHeaderComponent={renderHeader} 
+      ListEmptyComponent={() => (
+        !loadingTarefas ? 
+        <Text style={styles.emptyText}>Nenhuma tarefa cadastrada para esta matéria.</Text> 
+        : null
       )}
-    </ScrollView>
+      ListFooterComponent={() => (
+        loadingTarefas ? <ActivityIndicator size="large" color="#38a69d" style={{ margin: 20 }} /> : null
+      )}
+    />
   );
 }
 
@@ -198,16 +254,15 @@ const styles = StyleSheet.create({
     backgroundColor: "#f4f4f4",
   },
   scrollContainer: {
-    paddingBottom: 50, 
+    padding: 50,
   },
-
   formContainer: {
     backgroundColor: '#fff',
     padding: 20,
     marginHorizontal: 10,
     borderRadius: 8,
     elevation: 2,
-    marginTop: 40, 
+    marginTop: 40,
   },
   formTitle: {
     fontSize: 18,
@@ -215,6 +270,12 @@ const styles = StyleSheet.create({
     color: '#333',
     marginBottom: 15,
     textAlign: 'center',
+  },
+  label: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 5,
+    marginLeft: 5,
   },
   input: {
     borderWidth: 1,
@@ -224,6 +285,18 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     borderRadius: 8,
     backgroundColor: '#fff',
+  },
+  pickerContainer: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    marginBottom: 10,
+    width: '100%',
+    backgroundColor: '#fff',
+  },
+  picker: {
+    width: "100%",
+    height: 50,
   },
   cancelButton: {
     marginTop: 10,
@@ -252,16 +325,24 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
   },
+  checkbox: {
+    marginRight: 15,
+  },
   itemTextContainer: {
     flex: 1,
   },
-  itemMateria: {
+  itemMateria: { 
     fontSize: 16,
     fontWeight: 'bold',
   },
-  itemTema: {
+  itemTema: { 
     fontSize: 14,
     color: '#666',
+  },
+  itemData: { 
+    fontSize: 12,
+    color: '#888',
+    fontStyle: 'italic',
   },
   itemButtons: {
     flexDirection: 'row',

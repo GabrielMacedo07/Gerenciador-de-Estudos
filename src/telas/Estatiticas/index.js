@@ -32,7 +32,7 @@ export default function Estatisticas() {
     setLoadingMaterias(true);
     try {
       const response = await api.get('/materias');
-      setMaterias(response.data);
+      setMaterias(response.data || []);
     } catch (e) {
       console.error("Erro ao carregar matérias: ", e);
       Alert.alert("Erro", "Não foi possível carregar suas matérias.");
@@ -43,7 +43,7 @@ export default function Estatisticas() {
 
   const carregarNotasDaMateria = async (idMateria) => {
     if (!idMateria) {
-      setNotaLista([]);
+      setNotaLista(response.data || []);
       return;
     }
     setLoadingNotas(true);
@@ -134,9 +134,11 @@ export default function Estatisticas() {
   useFocusEffect(
     useCallback(() => {
       carregarMaterias();
-      limparFormulario();
-      setNotaLista([]);
-      setSelectedMateria(null);
+      return () => {
+        limparFormulario();
+        setNotaLista([]);
+        setSelectedMateria(null);
+      };
     }, [])
   );
 
@@ -157,7 +159,6 @@ export default function Estatisticas() {
               onValueChange={(itemValue) => {
                 setSelectedMateria(itemValue);
                 carregarNotasDaMateria(itemValue);
-                limparFormulario(); 
               }}
               style={styles.picker}
             >

@@ -1,26 +1,31 @@
-// src/telas/Sair.js
 import React, { useEffect } from 'react';
-import { useNavigation } from '@react-navigation/native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { View, ActivityIndicator, StyleSheet, Text } from 'react-native';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Sair() {
-  const navigation = useNavigation();
+  const { logout } = useAuth();
 
   useEffect(() => {
-    const logout = async () => {
-      // Apaga dados do usuário (opcional)
-      await AsyncStorage.removeItem('@usuario');
-      await AsyncStorage.removeItem('@imagem_perfil');
-
-      // Redefine a pilha e volta para Welcome
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'Welcome' }],
-      });
-    };
-
     logout();
-  }, []);
-
-  return null; // não exibe nada na tela
+  }, []); 
+  return (
+    <View style={styles.container}>
+      <ActivityIndicator size="large" color="#38a69d" />
+      <Text style={styles.text}>Saindo...</Text>
+    </View>
+  );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff'
+  },
+  text: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#38a69d'
+  }
+});

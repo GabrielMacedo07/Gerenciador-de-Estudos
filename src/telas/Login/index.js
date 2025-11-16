@@ -19,9 +19,8 @@ export default function Login() {
     }
 
     try {
-      await login(email, senha);
+       const usuarioLogado = await login(email, senha);
 
-      navigation.navigate('Formulario');
       
     } catch (error) {
       Alert.alert('Erro no login', error.message);

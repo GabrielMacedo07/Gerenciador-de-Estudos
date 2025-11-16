@@ -21,7 +21,7 @@ export default function Agenda({ navigation }) {
     setLoadingMaterias(true);
     try {
       const response = await api.get('/materias');
-      setMaterias(response.data);
+      setMaterias(response.data || []);
     } catch (error) {
       console.log(error);
       Alert.alert("Erro", "Não foi possível carregar suas matérias.");
@@ -32,7 +32,7 @@ export default function Agenda({ navigation }) {
 
   const carregarEventos = async (idMateria) => {
     if (!idMateria) {
-      setEventos([]);
+      setEventos(response.data || []);
       return;
     }
     setLoadingEventos(true);

@@ -7,7 +7,6 @@ const AuthContext = createContext({});
 function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
-  
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -50,7 +49,7 @@ function AuthProvider({ children }) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setLoading(false);
-      return true;
+      return usuario;
 
     } catch (error) {
       console.log("Erro no login (AuthContext):", error);
@@ -58,6 +57,10 @@ function AuthProvider({ children }) {
       throw new Error('Email ou senha inválidos.');
     }
   };
+  const updateUser = (newUserData) => {
+      setUser(newUserData);
+      AsyncStorage.setItem('@user', JSON.stringify(newUserData));
+    };
 
   const logout = async () => {
     setLoading(true);
@@ -67,7 +70,7 @@ function AuthProvider({ children }) {
     api.defaults.headers.common['Authorization'] = '';
     setLoading(false);
   };
-
+  
   return (
     <AuthContext.Provider value={{ 
       isLoggedIn: !!token,
@@ -75,7 +78,8 @@ function AuthProvider({ children }) {
       token, 
       loading,
       login, 
-      logout 
+      logout,
+      updateUser
     }}>
       {children}
     </AuthContext.Provider>
