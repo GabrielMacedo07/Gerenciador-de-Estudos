@@ -5,6 +5,7 @@ import br.com.universidade.gerenciador_de_estudos.dto.UsuarioResponseDTO;
 import br.com.universidade.gerenciador_de_estudos.model.Usuario;
 import br.com.universidade.gerenciador_de_estudos.service.TokenService;
 import br.com.universidade.gerenciador_de_estudos.service.UsuarioService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequestDTO data) {
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO data) {
         try {
 
             Usuario usuarioAutenticado = usuarioService.autenticar(data);
@@ -45,9 +46,8 @@ public class AuthenticationController {
             return ResponseEntity.ok(Map.of("token", token, "usuario", usuarioDTO));
 
         } catch (RuntimeException e) {
-
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("error", "Email ou senha inválidos"));
+                    .body(Map.of("erro", "Email ou senha inválidos"));
         }
     }
 }

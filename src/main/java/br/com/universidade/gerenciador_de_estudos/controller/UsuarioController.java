@@ -9,7 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin("*")
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
@@ -20,7 +20,7 @@ public class UsuarioController {
     @GetMapping
     public ResponseEntity<?> listaUsuarios() {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                .body("Endpoint desabilitado por segurança");
+                .body("Endpoint desabilitado por segurança. Use endpoints específicos.");
     }
 
     @PostMapping

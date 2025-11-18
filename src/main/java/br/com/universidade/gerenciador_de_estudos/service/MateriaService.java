@@ -18,16 +18,8 @@ public class MateriaService extends BaseService {
      * Busca todas as matérias que pertencem ao usuário logado.
      */
     public List<Materia> listarMateriasDoUsuarioLogado() {
-        // Pega os dados do usuário que foi autenticado pelo nosso SecurityFilter
         Usuario usuarioLogado = getUsuarioLogado();
-
-        // No futuro, podemos otimizar isso criando um método no repository
-        // return materiaRepository.findByUsuario(usuarioLogado);
-
-
-        return materiaRepository.findAll().stream()
-                .filter(materia -> materia.getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario()))
-                .toList();
+        return materiaRepository.findByUsuario(usuarioLogado);
     }
 
 

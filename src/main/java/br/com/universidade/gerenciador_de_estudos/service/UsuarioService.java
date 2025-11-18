@@ -1,7 +1,7 @@
 package br.com.universidade.gerenciador_de_estudos.service;
 
 import br.com.universidade.gerenciador_de_estudos.dto.FormularioDTO;
-import br.com.universidade.gerenciador_de_estudos.dto.LoginRequestDTO;
+import br.com.universidade.gerenciador_de_estudos.dto.LoginRequestDTO; // Verifique se você tem este DTO criado
 import br.com.universidade.gerenciador_de_estudos.model.Usuario;
 import br.com.universidade.gerenciador_de_estudos.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,14 +24,11 @@ public class UsuarioService extends BaseService {
         return usuarioRepository.save(usuario);
     }
     public Usuario completarCadastro(FormularioDTO dados) {
-
         Usuario usuarioLogado = getUsuarioLogado();
-
         usuarioLogado.setNome(dados.nome());
         usuarioLogado.setCurso(dados.curso());
         usuarioLogado.setPeriodoAtual(dados.periodoAtual());
         usuarioLogado.setIdade(dados.idade());
-
         return usuarioRepository.save(usuarioLogado);
     }
 

@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin("*")
 public class TarefaController {
 
     @Autowired
@@ -72,13 +72,14 @@ public class TarefaController {
     @PatchMapping("/tarefas/{idTarefa}/status")
     public ResponseEntity<?> atualizarStatusTarefa(
             @PathVariable Integer idTarefa,
-            @RequestBody Map<String, Boolean> status) {
+            @RequestBody Map<String, Boolean> payload) {
         try {
-            Boolean concluida = status.get("concluida");
+            Boolean concluida = payload.get("concluida");
             if (concluida == null) {
                 return ResponseEntity.badRequest().body("Campo 'concluida' é obrigatório");
             }
-            Tarefa tarefaAtualizada = tarefaService.atualizarStatus(idTarefa, concluida);
+            
+            Tarefa tarefaAtualizada = tarefaService.atualizarStatusTarefa(idTarefa, concluida);
             return ResponseEntity.ok(tarefaAtualizada);
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Acesso negado")) {

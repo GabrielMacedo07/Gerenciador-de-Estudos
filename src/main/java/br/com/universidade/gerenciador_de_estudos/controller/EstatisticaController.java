@@ -13,7 +13,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/estatisticas") // Nova rota base para estatísticas
-@CrossOrigin(origins = "http://localhost:8081")
+@CrossOrigin("*")
 public class EstatisticaController {
 
     @Autowired

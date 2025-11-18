@@ -14,9 +14,9 @@ public class Evento {
     @Column(name = "id_evento")
     private Integer idEvento;
 
+    @Column(name = "dia_semana", nullable = true)
     @Enumerated(EnumType.STRING)
-    @Column(name = "dia_da_semana", nullable = true, length = 20)
-    private DayOfWeek diaDaSemana;
+    private DayOfWeek diaSemana;
 
     @Column(name = "hora", nullable = true)
     private LocalTime hora;
@@ -40,12 +40,12 @@ public class Evento {
         this.idEvento = idEvento;
     }
 
-    public DayOfWeek getDiaDaSemana() {
-        return diaDaSemana;
+    public DayOfWeek getDiaSemana() {
+        return diaSemana;
     }
 
-    public void setDiaDaSemana(DayOfWeek diaDaSemana) {
-        this.diaDaSemana = diaDaSemana;
+    public void setDiaSemana(DayOfWeek diaSemana) {
+        this.diaSemana = diaSemana;
     }
 
     public LocalTime getHora() {

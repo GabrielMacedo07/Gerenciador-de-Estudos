@@ -65,7 +65,7 @@ public class TarefaService extends BaseService {
         return tarefaRepository.save(tarefaExistente);
     }
 
-    public Tarefa atualizarStatus(Integer idTarefa, Boolean concluida) {
+    public Tarefa atualizarStatusTarefa(Integer idTarefa, boolean concluida) {
         Usuario usuarioLogado = getUsuarioLogado();
 
         Tarefa tarefaExistente = tarefaRepository.findById(idTarefa)
