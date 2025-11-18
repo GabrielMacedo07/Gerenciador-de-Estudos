@@ -1,10 +1,10 @@
 package br.com.universidade.gerenciador_de_estudos.service;
 
 import br.com.universidade.gerenciador_de_estudos.model.Materia;
-import br.com.universidade.gerenciador_de_estudos.model.Nota;
+import br.com.universidade.gerenciador_de_estudos.model.Tarefa;
 import br.com.universidade.gerenciador_de_estudos.model.Usuario;
 import br.com.universidade.gerenciador_de_estudos.repository.MateriaRepository;
-import br.com.universidade.gerenciador_de_estudos.repository.NotaRepository;
+import br.com.universidade.gerenciador_de_estudos.repository.TarefaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,15 +13,15 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class NotaService {
+public class TarefaService {
 
     @Autowired
-    private NotaRepository notaRepository;
+    private TarefaRepository tarefaRepository;
 
     @Autowired
-    private MateriaRepository materiaRepository;
+    private MateriaRepository materiaRepository; // Para verificar o dono da matéria
 
-    public Nota criarNota(Nota nota, Integer idMateria) {
+    public Tarefa criarTarefa(Tarefa tarefa, Integer idMateria) {
         Usuario usuarioLogado = getUsuarioLogado();
 
         Materia materia = materiaRepository.findById(idMateria)
@@ -30,52 +30,56 @@ public class NotaService {
         if (!materia.getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
             throw new RuntimeException("Acesso negado: Esta matéria não pertence a você.");
         }
-        nota.setMateria(materia);
-        return notaRepository.save(nota);
+
+        tarefa.setMateria(materia);
+        return tarefaRepository.save(tarefa);
     }
 
-    public List<Nota> listarNotasDaMateria(Integer idMateria) {
+
+    public List<Tarefa> listarTarefasDaMateria(Integer idMateria) {
         Usuario usuarioLogado = getUsuarioLogado();
 
         Materia materia = materiaRepository.findById(idMateria)
                 .orElseThrow(() -> new RuntimeException("Matéria não encontrada!"));
 
-        // VERIFICAÇÃO DE SEGURANÇA
         if (!materia.getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
             throw new RuntimeException("Acesso negado: Esta matéria não pertence a você.");
         }
 
-        return notaRepository.findByMateria(materia);
+        return tarefaRepository.findByMateria(materia);
     }
 
-    public Nota atualizarNota(Integer idNota, Nota dadosAtualizados) {
+
+    public Tarefa atualizarTarefa(Integer idTarefa, Tarefa dadosAtualizados) {
         Usuario usuarioLogado = getUsuarioLogado();
 
-        Nota notaExistente = notaRepository.findById(idNota)
-                .orElseThrow(() -> new RuntimeException("Nota não encontrada!"));
+        Tarefa tarefaExistente = tarefaRepository.findById(idTarefa)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada!"));
 
-        if (!notaExistente.getMateria().getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
-            throw new RuntimeException("Acesso negado: Você não é o dono desta nota.");
+        if (!tarefaExistente.getMateria().getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
+            throw new RuntimeException("Acesso negado: Você não é o dono desta tarefa.");
         }
 
-        notaExistente.setDescricao(dadosAtualizados.getDescricao());
-        notaExistente.setNota(dadosAtualizados.getNota());
-
-        return notaRepository.save(notaExistente);
+        tarefaExistente.setTema(dadosAtualizados.getTema());
+        tarefaExistente.setDescricao(dadosAtualizados.getDescricao());
+        tarefaExistente.setDataEntrega(dadosAtualizados.getDataEntrega());
+        return tarefaRepository.save(tarefaExistente);
     }
 
-    public void deletarNota(Integer idNota) {
+
+    public void deletarTarefa(Integer idTarefa) {
         Usuario usuarioLogado = getUsuarioLogado();
 
-        Nota nota = notaRepository.findById(idNota)
-                .orElseThrow(() -> new RuntimeException("Nota não encontrada!"));
+        Tarefa tarefa = tarefaRepository.findById(idTarefa)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada!"));
 
-        if (!nota.getMateria().getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
-            throw new RuntimeException("Acesso negado: Esta nota não pertence a você.");
+        if (!tarefa.getMateria().getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
+            throw new RuntimeException("Acesso negado: Esta tarefa não pertence a você.");
         }
 
-        notaRepository.delete(nota);
+        tarefaRepository.delete(tarefa);
     }
+
 
     private Usuario getUsuarioLogado() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

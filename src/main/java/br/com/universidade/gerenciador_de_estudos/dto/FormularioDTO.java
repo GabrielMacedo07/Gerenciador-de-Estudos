@@ -1,6 +1,8 @@
 package br.com.universidade.gerenciador_de_estudos.dto;
 
-public record FormularioDTO(String curso,
-                            String periodoAtual,
-                            Integer idade) {
+public record FormularioDTO(
+        String nome,
+        String curso,
+        String periodoAtual,
+        Integer idade) {
 }

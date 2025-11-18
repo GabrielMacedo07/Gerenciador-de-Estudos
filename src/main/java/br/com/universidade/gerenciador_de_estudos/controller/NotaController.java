@@ -10,14 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/materias")
 @CrossOrigin("*")
 public class NotaController {
 
     @Autowired
     private NotaService notaService;
 
-    @PostMapping("/{idMateria}/notas")
+    @PostMapping("/materias/{idMateria}/notas")
     public ResponseEntity<?> criarNota(
             @PathVariable Integer idMateria,
             @RequestBody Nota nota) {
@@ -29,7 +28,7 @@ public class NotaController {
         }
     }
 
-    @GetMapping("/{idMateria}/notas")
+    @GetMapping("/materias/{idMateria}/notas")
     public ResponseEntity<?> listarNotasDaMateria(@PathVariable Integer idMateria) {
         try {
             List<Nota> notas = notaService.listarNotasDaMateria(idMateria);
@@ -39,13 +38,31 @@ public class NotaController {
         }
     }
 
+    @PutMapping("/notas/{idNota}")
+    public ResponseEntity<?> atualizarNota(
+            @PathVariable Integer idNota,
+            @RequestBody Nota dadosAtualizados) {
+        try {
+            Nota notaAtualizada = notaService.atualizarNota(idNota, dadosAtualizados);
+            return ResponseEntity.ok(notaAtualizada);
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Acesso negado")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
     @DeleteMapping("/notas/{idNota}")
     public ResponseEntity<?> deletarNota(@PathVariable Integer idNota) {
         try {
             notaService.deletarNota(idNota);
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build();
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            if (e.getMessage().contains("Acesso negado")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }

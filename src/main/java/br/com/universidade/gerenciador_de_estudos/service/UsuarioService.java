@@ -26,15 +26,14 @@ public class UsuarioService {
         return usuarioRepository.save(usuario);
     }
     public Usuario completarCadastro(FormularioDTO dados) {
-        // 1. Pega o usuário que foi autenticado pelo nosso SecurityFilter
+
         Usuario usuarioLogado = getUsuarioLogado();
 
-        // 2. Atualiza os campos que faltavam
+        usuarioLogado.setNome(dados.nome());
         usuarioLogado.setCurso(dados.curso());
         usuarioLogado.setPeriodoAtual(dados.periodoAtual());
         usuarioLogado.setIdade(dados.idade());
 
-        // 3. Salva o usuário atualizado no banco
         return usuarioRepository.save(usuarioLogado);
     }
     private Usuario getUsuarioLogado() {
@@ -42,7 +41,6 @@ public class UsuarioService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new RuntimeException("Nenhum usuário autenticado encontrado.");
         }
-        // Nosso SecurityFilter garante que o 'Principal' é o nosso objeto 'Usuario'
         return (Usuario) authentication.getPrincipal();
     }
 

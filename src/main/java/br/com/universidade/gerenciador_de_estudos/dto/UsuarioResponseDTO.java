@@ -6,6 +6,6 @@ public record UsuarioResponseDTO(
         String email,
         String curso,
         String periodoAtual,
-        Integer idade // Usamos Integer para aceitar o valor 'null'
+        Integer idade
 ) {
 }

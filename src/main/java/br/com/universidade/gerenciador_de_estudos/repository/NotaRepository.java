@@ -17,7 +17,7 @@ public interface NotaRepository extends JpaRepository<Nota, Integer> {
     @Query("""
         SELECT new br.com.universidade.gerenciador_de_estudos.dto.EstatisticaNotaDTO(
             m.nomeMateria, 
-            AVG(n.valor)
+            AVG(n.nota) 
         ) 
         FROM Nota n 
         JOIN n.materia m 

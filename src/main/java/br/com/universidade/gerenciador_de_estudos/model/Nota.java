@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "nota") // Nome da tabela no banco
+@Table(name = "nota")
 public class Nota {
 
     @Id
@@ -12,12 +12,11 @@ public class Nota {
     @Column(name = "id_nota")
     private Integer idNota;
 
-    @Column(name = "titulo", nullable = false, length = 100)
-    private String titulo;
+    @Column(name = "descricao", nullable = true, length = 255)
+    private String descricao;
 
-    @Column(name = "valor", nullable = false)
-    private Double valor;
-
+    @Column(name = "nota", nullable = false)
+    private double nota;
 
     @ManyToOne
     @JoinColumn(name = "id_materia", nullable = false)
@@ -32,20 +31,20 @@ public class Nota {
         this.idNota = idNota;
     }
 
-    public String getTitulo() {
-        return titulo;
+    public String getDescricao() {
+        return descricao;
     }
 
-    public void setTitulo(String titulo) {
-        this.titulo = titulo;
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
     }
 
-    public Double getValor() {
-        return valor;
+    public double getNota() {
+        return nota;
     }
 
-    public void setValor(Double valor) {
-        this.valor = valor;
+    public void setNota(double nota) {
+        this.nota = nota;
     }
 
     public Materia getMateria() {
