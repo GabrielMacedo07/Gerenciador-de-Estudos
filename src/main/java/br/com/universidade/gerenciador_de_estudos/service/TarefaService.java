@@ -6,14 +6,12 @@ import br.com.universidade.gerenciador_de_estudos.model.Usuario;
 import br.com.universidade.gerenciador_de_estudos.repository.MateriaRepository;
 import br.com.universidade.gerenciador_de_estudos.repository.TarefaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class TarefaService {
+public class TarefaService extends BaseService {
 
     @Autowired
     private TarefaRepository tarefaRepository;
@@ -63,6 +61,21 @@ public class TarefaService {
         tarefaExistente.setTema(dadosAtualizados.getTema());
         tarefaExistente.setDescricao(dadosAtualizados.getDescricao());
         tarefaExistente.setDataEntrega(dadosAtualizados.getDataEntrega());
+        tarefaExistente.setConcluida(dadosAtualizados.isConcluida());
+        return tarefaRepository.save(tarefaExistente);
+    }
+
+    public Tarefa atualizarStatus(Integer idTarefa, Boolean concluida) {
+        Usuario usuarioLogado = getUsuarioLogado();
+
+        Tarefa tarefaExistente = tarefaRepository.findById(idTarefa)
+                .orElseThrow(() -> new RuntimeException("Tarefa não encontrada!"));
+
+        if (!tarefaExistente.getMateria().getUsuario().getIdUsuario().equals(usuarioLogado.getIdUsuario())) {
+            throw new RuntimeException("Acesso negado: Você não é o dono desta tarefa.");
+        }
+
+        tarefaExistente.setConcluida(concluida);
         return tarefaRepository.save(tarefaExistente);
     }
 
@@ -78,14 +91,5 @@ public class TarefaService {
         }
 
         tarefaRepository.delete(tarefa);
-    }
-
-
-    private Usuario getUsuarioLogado() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Nenhum usuário autenticado encontrado.");
-        }
-        return (Usuario) authentication.getPrincipal();
     }
 }

@@ -46,7 +46,8 @@ public class AuthenticationController {
 
         } catch (RuntimeException e) {
 
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "Email ou senha inválidos"));
         }
     }
 }

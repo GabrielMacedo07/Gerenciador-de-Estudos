@@ -2,7 +2,8 @@ package br.com.universidade.gerenciador_de_estudos.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import java.time.LocalTime; // Para a hora do evento
+import java.time.DayOfWeek;
+import java.time.LocalTime;
 
 @Entity
 @Table(name = "eventos")
@@ -12,6 +13,10 @@ public class Evento {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_evento")
     private Integer idEvento;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "dia_da_semana", nullable = true, length = 20)
+    private DayOfWeek diaDaSemana;
 
     @Column(name = "hora", nullable = true)
     private LocalTime hora;
@@ -33,6 +38,14 @@ public class Evento {
 
     public void setIdEvento(Integer idEvento) {
         this.idEvento = idEvento;
+    }
+
+    public DayOfWeek getDiaDaSemana() {
+        return diaDaSemana;
+    }
+
+    public void setDiaDaSemana(DayOfWeek diaDaSemana) {
+        this.diaDaSemana = diaDaSemana;
     }
 
     public LocalTime getHora() {

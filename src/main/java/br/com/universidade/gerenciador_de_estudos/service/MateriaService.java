@@ -4,15 +4,12 @@ import br.com.universidade.gerenciador_de_estudos.model.Materia;
 import br.com.universidade.gerenciador_de_estudos.model.Usuario;
 import br.com.universidade.gerenciador_de_estudos.repository.MateriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
-public class MateriaService {
+public class MateriaService extends BaseService {
 
     @Autowired
     private MateriaRepository materiaRepository;
@@ -76,15 +73,5 @@ public class MateriaService {
         }
 
         materiaRepository.delete(materiaExistente);
-    }
-
-
-    private Usuario getUsuarioLogado() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Nenhum usuário autenticado encontrado.");
-        }
-        // SecurityFilter garante que o 'Principal' é o nosso objeto 'Usuario'
-        return (Usuario) authentication.getPrincipal();
     }
 }

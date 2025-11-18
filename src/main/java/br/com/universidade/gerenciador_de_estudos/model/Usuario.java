@@ -1,4 +1,5 @@
 package br.com.universidade.gerenciador_de_estudos.model;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 @Entity
@@ -22,6 +23,7 @@ public class Usuario {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
+    @JsonIgnore
     @Column(name = "senha", nullable = false, length = 255)
     private String senha;
 

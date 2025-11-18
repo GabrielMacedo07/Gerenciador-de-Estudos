@@ -1,18 +1,16 @@
 package br.com.universidade.gerenciador_de_estudos.service;
 
 import br.com.universidade.gerenciador_de_estudos.dto.FormularioDTO;
-import br.com.universidade.gerenciador_de_estudos.dto.LoginRequestDTO; // Verifique se você tem este DTO criado
+import br.com.universidade.gerenciador_de_estudos.dto.LoginRequestDTO;
 import br.com.universidade.gerenciador_de_estudos.model.Usuario;
 import br.com.universidade.gerenciador_de_estudos.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class UsuarioService {
+public class UsuarioService extends BaseService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -35,13 +33,6 @@ public class UsuarioService {
         usuarioLogado.setIdade(dados.idade());
 
         return usuarioRepository.save(usuarioLogado);
-    }
-    private Usuario getUsuarioLogado() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new RuntimeException("Nenhum usuário autenticado encontrado.");
-        }
-        return (Usuario) authentication.getPrincipal();
     }
 
     public Usuario editarUsuario(Integer idUsuario, Usuario dadosAtualizados) {

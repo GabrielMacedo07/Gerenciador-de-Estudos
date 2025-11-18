@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:8081")
 public class TarefaController {
 
     @Autowired
@@ -61,6 +61,25 @@ public class TarefaController {
         try {
             tarefaService.deletarTarefa(idTarefa);
             return ResponseEntity.noContent().build(); // 204 No Content
+        } catch (RuntimeException e) {
+            if (e.getMessage().contains("Acesso negado")) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+            }
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    @PatchMapping("/tarefas/{idTarefa}/status")
+    public ResponseEntity<?> atualizarStatusTarefa(
+            @PathVariable Integer idTarefa,
+            @RequestBody Map<String, Boolean> status) {
+        try {
+            Boolean concluida = status.get("concluida");
+            if (concluida == null) {
+                return ResponseEntity.badRequest().body("Campo 'concluida' é obrigatório");
+            }
+            Tarefa tarefaAtualizada = tarefaService.atualizarStatus(idTarefa, concluida);
+            return ResponseEntity.ok(tarefaAtualizada);
         } catch (RuntimeException e) {
             if (e.getMessage().contains("Acesso negado")) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());

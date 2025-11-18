@@ -7,10 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 
 @RestController
-@CrossOrigin("*")
+@CrossOrigin(origins = "http://localhost:8081")
 @RequestMapping("/usuarios")
 public class UsuarioController {
 
@@ -19,8 +18,9 @@ public class UsuarioController {
     private UsuarioService service;
 
     @GetMapping
-    public List<Usuario> listaUsuarios() {
-        return service.listarTodos();
+    public ResponseEntity<?> listaUsuarios() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body("Endpoint desabilitado por segurança");
     }
 
     @PostMapping
