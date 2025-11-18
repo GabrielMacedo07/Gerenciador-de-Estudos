@@ -96,7 +96,7 @@ export default function GerenciarTarefas() {
   };
 
   const handleToggleCheckbox = async (tarefa) => {
-    const novoStatus = !tarefa.concluido;
+    const novoStatus = !tarefa.concluida;
     try {
       await api.patch(`/tarefas/${tarefa.idTarefa}/status`, {
         concluida: novoStatus,
@@ -207,22 +207,26 @@ export default function GerenciarTarefas() {
 
   const renderItem = ({ item }) => (
     <View style={styles.item} key={item.idTarefa.toString()}>
-      <CheckBox
-        value={item.concluido}
-        onValueChange={() => handleToggleCheckbox(item)}
-        color={item.concluido ? "#38a69d" : undefined}
-        style={styles.checkbox}
-      />
-      <View style={[styles.itemTextContainer, { textDecorationLine: item.concluido ? 'line-through' : 'none' }]}>
-        <Text style={styles.itemMateria}>{item.tema}</Text> 
-        {item.descricao && <Text style={styles.itemTema}>{item.descricao}</Text>}
-        {item.dataEntrega && <Text style={styles.itemData}>{item.dataEntrega}</Text>}
+      <View style={[styles.itemTextContainer, { textDecorationLine: item.concluida ? 'line-through' : 'none' }]}>
+        <Text style={[styles.itemMateria, item.concluida && styles.textConcluido]}>{item.tema}</Text> 
+        {item.descricao && <Text style={[styles.itemTema, item.concluida && styles.textConcluido]}>{item.descricao}</Text>}
+        {item.dataEntrega && <Text style={[styles.itemData, item.concluida && styles.textConcluido]}>{item.dataEntrega}</Text>}
       </View>
       <View style={styles.itemButtons}>
-        <TouchableOpacity onPress={() => iniciarEdicao(item)}>
+        <TouchableOpacity 
+          onPress={() => handleToggleCheckbox(item)}
+          style={styles.actionButton}
+        >
+          <Feather 
+            name={item.concluida ? "check-circle" : "circle"} 
+            size={22} 
+            color={item.concluida ? "#28a745" : "#6c757d"} 
+          />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => iniciarEdicao(item)} style={styles.actionButton}>
           <Feather name="edit-2" size={20} color="#007bff" />
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => handleDeletarTarefa(item.idTarefa)}>
+        <TouchableOpacity onPress={() => handleDeletarTarefa(item.idTarefa)} style={styles.actionButton}>
           <Feather name="trash-2" size={20} color="#dc3545" />
         </TouchableOpacity>
       </View>
@@ -325,11 +329,9 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#fff',
   },
-  checkbox: {
-    marginRight: 15,
-  },
   itemTextContainer: {
     flex: 1,
+    marginRight: 10,
   },
   itemMateria: { 
     fontSize: 16,
@@ -344,10 +346,17 @@ const styles = StyleSheet.create({
     color: '#888',
     fontStyle: 'italic',
   },
+  textConcluido: {
+    color: '#999',
+    opacity: 0.6,
+  },
   itemButtons: {
     flexDirection: 'row',
-    width: 60,
-    justifyContent: 'space-between',
+    alignItems: 'center',
+    gap: 12,
+  },
+  actionButton: {
+    padding: 4,
   },
   emptyText: {
     textAlign: 'center',

@@ -17,7 +17,6 @@ function AuthProvider({ children }) {
 
         if (storedToken && storedUser) {
           api.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
-          
           setToken(storedToken);
           setUser(JSON.parse(storedUser));
         }
@@ -30,6 +29,7 @@ function AuthProvider({ children }) {
 
     loadStorageData();
   }, []);
+
   const login = async (email, senha) => {
     setLoading(true);
     try {
@@ -49,24 +49,24 @@ function AuthProvider({ children }) {
       api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       
       setLoading(false);
-      return usuario;
 
     } catch (error) {
-      console.log("Erro no login (AuthContext):", error);
+      console.log("Erro no login:", error);
       setLoading(false);
       throw new Error('Email ou senha inválidos.');
     }
   };
-  const updateUser = (newUserData) => {
+  const updateUser = async (newUserData) => {
       setUser(newUserData);
-      AsyncStorage.setItem('@user', JSON.stringify(newUserData));
+      await AsyncStorage.setItem('@user', JSON.stringify(newUserData));
     };
 
   const logout = async () => {
     setLoading(true);
     setToken(null);
     setUser(null);
-    await AsyncStorage.clear();
+    await AsyncStorage.removeItem('@token');
+    await AsyncStorage.removeItem('@user');
     api.defaults.headers.common['Authorization'] = '';
     setLoading(false);
   };

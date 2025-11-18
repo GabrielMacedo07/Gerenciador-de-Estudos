@@ -19,13 +19,10 @@ export default function Login() {
     }
 
     try {
-       const usuarioLogado = await login(email, senha);
-
-      
+      await login(email, senha);
     } catch (error) {
       Alert.alert('Erro no login', error.message);
     }
-
   };
 
   return (

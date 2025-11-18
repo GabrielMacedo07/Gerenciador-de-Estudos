@@ -55,16 +55,8 @@ export default function Formulario() {
       const response = await api.patch('/usuarios/completar-perfil', dadosFormulario);
       const usuarioAtualizado = response.data;
 
-      Alert.alert(
-        'Sucesso!', 
-        'Seu perfil foi atualizado.',
-        [
-          { 
-            text: 'OK', 
-            onPress: () => updateUser(usuarioAtualizado) 
-          }
-        ]
-      );
+      await updateUser(usuarioAtualizado);
+      Alert.alert('Sucesso!', 'Seu perfil foi atualizado.');
      
 
     } catch (error) {

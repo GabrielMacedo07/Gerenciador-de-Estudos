@@ -14,7 +14,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Feather } from '@expo/vector-icons';
 import api from '../servicos/api'; 
 
-export default function Materias({ navigation }) {
+export default function Materias() {
   
 
   const [nomeMateria, setNomeMateria] = useState("");
@@ -120,9 +120,6 @@ export default function Materias({ navigation }) {
       style={styles.container} 
       contentContainerStyle={styles.scrollContainer}
     >
-      
-      {}
-
       {/* Formulário de Criação/Edição */}
       <View style={styles.formContainer}>
         <Text style={styles.formTitle}>
