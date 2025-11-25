@@ -24,7 +24,8 @@ export default function Cadastro() {
       Alert.alert('Erro', 'As senhas não coincidem.');
       return;    
   }
-
+  setLoading(true);
+  
   const dadosUsuario = {
         nome: nome,
         email: email,

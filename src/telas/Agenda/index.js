@@ -16,32 +16,59 @@ export default function Agenda({ navigation }) {
   const [loadingEventos, setLoadingEventos] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
+    useFocusEffect(useCallback(() => {
+      let isActive = true; // Flag
 
-  const carregarMaterias = async () => {
-    setLoadingMaterias(true);
-    try {
-      const response = await api.get('/materias');
-      setMaterias(response.data || []);
-    } catch (error) {
-      console.log(error);
-      Alert.alert("Erro", "Não foi possível carregar suas matérias.");
-    } finally {
-      setLoadingMaterias(false);
-    }
-  };
+      const carregarMaterias = async () => {
+        if (isActive) setLoadingMaterias(true);
+        try {
+          const response = await api.get('/materias');
+          if (isActive) {
+            setMaterias(response.data || []);
+          }
+        } catch (error) {
+          if (isActive) Alert.alert("Erro", "Não foi possível carregar matérias.");
+        } finally {
+          if (isActive) setLoadingMaterias(false);
+        }
+      };
+
+      carregarMaterias();
+
+      return () => {
+        isActive = false; // Cleanup
+        // Opcional: Limpar estados ao sair
+        setEventos([]);
+        setSelectedMateria(null);
+      };
+    }, []));
+
+
+  // const carregarMaterias = async () => {
+  //   setLoadingMaterias(true);
+  //   try {
+  //     const response = await api.get('/materias');
+  //     setMaterias(response.data || []);
+  //   } catch (error) {
+  //     console.log(error);
+  //     Alert.alert("Erro", "Não foi possível carregar suas matérias.");
+  //   } finally {
+  //     setLoadingMaterias(false);
+  //   }
+  // };
 
   const carregarEventos = async (idMateria) => {
     if (!idMateria) {
-      setEventos(response.data || []);
+      setEventos([]);
       return;
     }
     setLoadingEventos(true);
     try {
       const response = await api.get(`/materias/${idMateria}/eventos`);
-      setEventos(response.data);
+      setEventos(response.data || []);
     } catch (error) {
-      console.log(error);
       Alert.alert("Erro", "Não foi possível carregar os eventos desta matéria.");
+      console.log(error);
     } finally {
       setLoadingEventos(false);
     }
@@ -86,8 +113,6 @@ export default function Agenda({ navigation }) {
       Alert.alert("Erro", "Não foi possível excluir o evento.");
     }
   };
-
-  useFocusEffect(useCallback(() => { carregarMaterias(); }, []));
 
   return (
     <ScrollView 

@@ -31,17 +31,35 @@ export default function GerenciarTarefas() {
   const [loadingTarefas, setLoadingTarefas] = useState(false);
   const [loadingSubmit, setLoadingSubmit] = useState(false);
 
-  const carregarMaterias = async () => {
-    setLoadingMaterias(true);
-    try {
-      const response = await api.get("/materias");
-      setMaterias(response.data || []);
-    } catch (e) {
-      Alert.alert("Erro", "Não foi possível carregar suas matérias.");
-    } finally {
-      setLoadingMaterias(false);
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      let isActive = true; // 1. Flag: A tela está ativa?
+
+      const carregarMaterias = async () => {
+        if (isActive) setLoadingMaterias(true); // Só atualiza se ativo
+        
+        try {
+          const response = await api.get('/materias');
+          if (isActive) {
+            setMaterias(response.data || []);
+          }
+        } catch (error) {
+          if (isActive) {
+            Alert.alert("Erro", "Não foi possível carregar suas matérias.");
+          }
+        } finally {
+          if (isActive) setLoadingMaterias(false);
+        }
+      };
+
+      carregarMaterias();
+
+      // 2. Função de Limpeza: Roda quando o usuário SAI da tela
+      return () => {
+        isActive = false; // Marca como inativo
+      };
+    }, [])
+  );
 
   const carregarTarefasDaMateria = async (idMateria) => {
     if (!idMateria) {
@@ -142,17 +160,6 @@ export default function GerenciarTarefas() {
     setDescricao("");
     setDataEntrega("");
   };
-
-  useFocusEffect(
-    useCallback(() => {
-      carregarMaterias();
-      return () => {
-        limparFormulario();
-        setTarefas([]);
-        setSelectedMateria(null);
-      };
-    }, [])
-  );
 
   const renderHeader = () => (
     <View>

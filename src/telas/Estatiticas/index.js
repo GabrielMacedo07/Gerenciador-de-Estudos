@@ -43,13 +43,13 @@ export default function Estatisticas() {
 
   const carregarNotasDaMateria = async (idMateria) => {
     if (!idMateria) {
-      setNotaLista(response.data || []);
+      setNotaLista([]);
       return;
     }
     setLoadingNotas(true);
     try {
       const response = await api.get(`/materias/${idMateria}/notas`);
-      setNotaLista(response.data);
+      setNotaLista(response.data || []);
     } catch (e) {
       console.error("Erro ao carregar notas: ", e);
     } finally {
@@ -133,8 +133,27 @@ export default function Estatisticas() {
 
   useFocusEffect(
     useCallback(() => {
+      let isActive = true; // Flag
+
+      const carregarMaterias = async () => {
+        if (isActive) setLoadingMaterias(true);
+        try {
+          const response = await api.get('/materias');
+          if (isActive) {
+            setMaterias(response.data || []);
+          }
+        } catch (e) {
+          if (isActive) Alert.alert("Erro", "Não foi possível carregar matérias.");
+        } finally {
+          if (isActive) setLoadingMaterias(false);
+        }
+      };
+
       carregarMaterias();
+
       return () => {
+        isActive = false; // Cleanup
+        // Limpa estados ao sair
         limparFormulario();
         setNotaLista([]);
         setSelectedMateria(null);

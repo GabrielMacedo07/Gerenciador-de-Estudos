@@ -30,8 +30,8 @@ export default function Materias() {
       const response = await api.get('/materias');
       setMaterias(response.data || []);
     } catch (error) {
-      console.log(error);
       Alert.alert("Erro", "Não foi possível carregar suas matérias.");
+      console.log(error);      
     } finally {
       setLoadingLista(false);
     }
