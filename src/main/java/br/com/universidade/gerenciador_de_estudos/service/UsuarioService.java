@@ -19,6 +19,12 @@ public class UsuarioService extends BaseService {
     private PasswordEncoder passwordEncoder;
 
     public Usuario criarUsuario(Usuario usuario) {
+        System.out.println("Recebido cadastro para: " + usuario.getEmail());
+        System.out.println("Senha recebida: " + usuario.getSenha());
+
+        if (usuario.getSenha() == null || usuario.getSenha().isEmpty()) {
+            throw new IllegalArgumentException("A senha é obrigatória e não pode ser nula.");
+        }
         String senhaCriptografada = passwordEncoder.encode(usuario.getSenha());
         usuario.setSenha(senhaCriptografada);
         return usuarioRepository.save(usuario);
@@ -48,9 +54,6 @@ public class UsuarioService extends BaseService {
         return usuarioRepository.save(usuarioExistente);
     }
 
-    public List<Usuario> listarTodos() {
-        return usuarioRepository.findAll();
-    }
 
     public void excluirUsuario(Integer idUsuario) {
         if (!usuarioRepository.existsById(idUsuario)) {

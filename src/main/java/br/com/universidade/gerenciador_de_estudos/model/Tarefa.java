@@ -1,6 +1,5 @@
 package br.com.universidade.gerenciador_de_estudos.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
@@ -26,9 +25,8 @@ public class Tarefa {
     @Column(name = "concluida", nullable = false)
     private boolean concluida;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_materia", nullable = false)
-    @JsonIgnore
     private Materia materia;
 
     @PrePersist

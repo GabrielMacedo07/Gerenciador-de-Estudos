@@ -6,12 +6,14 @@ import br.com.universidade.gerenciador_de_estudos.model.Usuario;
 import br.com.universidade.gerenciador_de_estudos.repository.MateriaRepository;
 import br.com.universidade.gerenciador_de_estudos.repository.TarefaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-public class TarefaService extends BaseService {
+public class TarefaService {
 
     @Autowired
     private TarefaRepository tarefaRepository;
@@ -61,7 +63,7 @@ public class TarefaService extends BaseService {
         tarefaExistente.setTema(dadosAtualizados.getTema());
         tarefaExistente.setDescricao(dadosAtualizados.getDescricao());
         tarefaExistente.setDataEntrega(dadosAtualizados.getDataEntrega());
-        tarefaExistente.setConcluida(dadosAtualizados.isConcluida());
+//        tarefaExistente.setConcluida(dadosAtualizados.isConcluida());
         return tarefaRepository.save(tarefaExistente);
     }
 
@@ -91,5 +93,12 @@ public class TarefaService extends BaseService {
         }
 
         tarefaRepository.delete(tarefa);
+    }
+    private Usuario getUsuarioLogado() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new RuntimeException("Nenhum usuário autenticado encontrado.");
+        }
+        return (Usuario) authentication.getPrincipal();
     }
 }

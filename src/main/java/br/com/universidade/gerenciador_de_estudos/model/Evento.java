@@ -29,7 +29,6 @@ public class Evento {
 
     @ManyToOne
     @JoinColumn(name = "id_materia", nullable = false)
-    @JsonIgnore
     private Materia materia;
 
     public Integer getIdEvento() {

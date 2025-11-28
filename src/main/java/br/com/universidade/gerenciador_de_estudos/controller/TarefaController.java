@@ -1,5 +1,6 @@
 package br.com.universidade.gerenciador_de_estudos.controller;
 
+import br.com.universidade.gerenciador_de_estudos.dto.TarefaResponseDTO;
 import br.com.universidade.gerenciador_de_estudos.model.Tarefa;
 import br.com.universidade.gerenciador_de_estudos.service.TarefaService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +23,22 @@ public class TarefaController {
             @PathVariable Integer idMateria,
             @RequestBody Tarefa tarefa) {
         try {
+            // 1. Cria a tarefa normalmente (Isso funciona, o banco salva)
             Tarefa novaTarefa = tarefaService.criarTarefa(tarefa, idMateria);
-            return ResponseEntity.status(HttpStatus.CREATED).body(novaTarefa);
+
+            // 2. CONVERTE para DTO (Aqui quebramos o loop!)
+            TarefaResponseDTO dto = new TarefaResponseDTO(
+                    novaTarefa.getIdTarefa(),
+                    novaTarefa.getTema(),
+                    novaTarefa.getDescricao(),
+                    novaTarefa.getDataEntrega(),
+                    novaTarefa.isConcluida(),
+                    novaTarefa.getMateria().getIdMateria() // Pegamos só o ID
+            );
+
+            // 3. Retorna o DTO seguro
+            return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
